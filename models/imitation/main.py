@@ -1,11 +1,14 @@
-from pd_game import *
+from sys import argv, stderr, path
+path.append('../../games')
 
-from sys import argv, stderr
 from os import listdir
 
 from functools import partial
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
+
+# definition of games used in the model
+from pd import *
 
 # count the number of nodes in population 's' in the graph 'g'
 # we assume that the strategy is stored in 's' attribute of the node
