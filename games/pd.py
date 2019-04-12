@@ -3,10 +3,6 @@ import numpy as np
 import random as rnd
 import matplotlib.pyplot as plt
 
-from functools import reduce
-from operator import and_
-
-
 # initial strategies distributed with equal probability
 def pd_init_strategy(g, strats = ['C', 'D']):
     for n in g.nodes:
