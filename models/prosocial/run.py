@@ -52,7 +52,7 @@ def update_node_strategy(tg: nx.Graph, n: object, rg: nx.Graph, model: str = 'S'
     :return: None
     """
 
-    # parametres in formula (1) from Szolnoki and Perc, NJP, 15 (2013) 053010
+    # parameters in formula (1) from Szolnoki and Perc, NJP, 15 (2013) 053010
     # scaling factors
     w_min = 0.1
     w_max = 1
