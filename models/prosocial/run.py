@@ -6,6 +6,10 @@ import numpy as np
 # random seed
 # rnd.seed(42)
 
+#
+# TODO: this should utilize the pd game from 'games' dir!
+#
+#
 
 # initial strategies distributed with equal probability
 def init_rnd_strategies(g: nx.Graph):
