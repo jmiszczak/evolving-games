@@ -30,11 +30,11 @@ def update_spin_sznajd(spin_chain, node):
     # print(node)
     if 0 < node < dim-2:
         if spin_chain.nodes[node]['s'] * spin_chain.nodes[node+1]['s'] == 1:
-            spin_chain.node[node-1]['s'] = spin_chain.nodes[node]['s']
-            spin_chain.node[node+2]['s'] = spin_chain.nodes[node]['s']
+            spin_chain.nodes[node-1]['s'] = spin_chain.nodes[node]['s']
+            spin_chain.nodes[node+2]['s'] = spin_chain.nodes[node]['s']
         else:
-            spin_chain.node[node-1]['s'] = spin_chain.nodes[node+1]['s']
-            spin_chain.node[node+2]['s'] = spin_chain.nodes[node]['s']
+            spin_chain.nodes[node-1]['s'] = spin_chain.nodes[node+1]['s']
+            spin_chain.nodes[node+2]['s'] = spin_chain.nodes[node]['s']
     return spin_chain
 
 
