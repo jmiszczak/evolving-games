@@ -1,4 +1,4 @@
-Simulations of evolution based on [A. Szolnoki, M. Perc, Information sharing promotes prosocial behaviour].
+Simulations of evolution based on [A. Szolnoki, M. Perc, Information sharing promotes prosocial behaviour, New Journal of Physics, Volume 15, May 2013](https://doi.org/10.1088/1367-2630/15/5/053010).
 
 **NOTE**: The main goal was to get nice visualizations, so the scripts are not well suited to produce new data.
 
