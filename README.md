@@ -1,4 +1,4 @@
-# evolving_games
+# evolving-games
 
 Collection of scripts implementing models from papers on evolutionary game theory.
 
