@@ -1,8 +1,8 @@
-import mesa as ms
+import mesa 
 import mesa.time as mt
 import numpy.random as rnd
 
-class MoneyAgent(ms.Agent):
+class MoneyAgent(mesa.Agent):
     """An agent with initial amount of money"""
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
@@ -17,7 +17,7 @@ class MoneyAgent(ms.Agent):
             other.wealth += 1
             self.wealth -= 1
 
-class MoneyModel(ms.Model):
+class MoneyModel(mesa.Model):
     def __init__(self, N):
         self.num_agents = N
         self.schedule = mt.RandomActivation(self)
