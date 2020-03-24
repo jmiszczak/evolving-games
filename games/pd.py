@@ -6,7 +6,7 @@ import random as rnd
 # a graph. Provides methods for initializing strategies and payoffs,
 # for evaluating payoffs, and for updating strategies.
 #
-# A single run of a gam on a graph is executed using pd_play.
+# A single run of a game on a graph is executed using pd_play.
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
