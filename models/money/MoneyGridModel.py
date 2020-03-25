@@ -48,6 +48,7 @@ class MoneyAgent(mesa.Agent):
 class MoneyGridModel(mesa.Model):
     def __init__(self, N, width, height):
         self.num_agents = N
+        self.running = True
         self.grid = ms.MultiGrid(width, height, True)
         self.schedule = mt.RandomActivation(self)
 
