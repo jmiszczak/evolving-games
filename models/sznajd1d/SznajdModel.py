@@ -1,9 +1,11 @@
+import networkx as nx
+
 import mesa
 import mesa.space as ms
 import mesa.time as mt
 import mesa.datacollection as md
 
-def average_opinion(model):
+def vote_result(model):
     opinions = [agent.opinion for agent in model.schedule.agents]
     return sum(opinions)/model.num_agents
 
@@ -18,11 +20,12 @@ class SznajdAgent(mesa.Agent):
         self.update_opinion()
 
     def update_opinion(self):
-        mates_pos = self.model.grid.get_neighborhood(
-                self.pos, 
-                moore=True,
+        mates_pos = self.model.grid.get_neighbors(
+                self.unique_id, 
                 include_center=False)
         mates = self.model.grid.get_cell_list_contents(mates_pos) 
+
+        # only two opinion are taken into account
         if len(mates) == 2:
             if self.opinion == mates[0].opinion:
                 mates[1].opinion = self.opinion
@@ -30,26 +33,26 @@ class SznajdAgent(mesa.Agent):
                 mates[0].opinion = self.opinion
             else :
                 self.opinion = mates[0].opinion
-        
-        # print("UID:", self.unique_id, mates)
+        else :
+            raise BaseException("wrong number of neighbors")
 
 
 class SznajdModel(mesa.Model):
-    def __init__(self, N, width, height):
-        self.num_agents = N
+    def __init__(self, width, height):
+        self.num_agents = width*height
         self.schedule = mt.RandomActivation(self)
-        self.grid = ms.MultiGrid(width, height, False)
-        self.xy = [(x,y) for x in range(width) for y in range(height)]
+        self.grid = ms.NetworkGrid(nx.grid_graph(dim=[self.num_agents], periodic=True))
+        self.x = [(x) for x in range(self.num_agents)]
 
         self.datacollector = md.DataCollector(
-                model_reporters = {'Average opinion' : average_opinion},
+                model_reporters = {'Average opinion' : vote_result},
                 agent_reporters = {'Opinion': 'opinion'}
                 )
 
         for uid in range(self.num_agents):
             a = SznajdAgent(uid, self)
             self.schedule.add(a)
-            self.grid.place_agent(a, self.xy[uid])
+            self.grid.place_agent(a, self.x[uid])
 
     # simulation step
     def step(self):
