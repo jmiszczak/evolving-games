@@ -15,8 +15,8 @@ def defectors_rate(model):
 
     Returns
     -------
-    int
-        Number of defectors among the agents of the model.
+    float
+        Fraction of defectors among the agents of the model.
 
     """
     agents_strategies = [agent.strategy for agent in model.schedule.agents]
@@ -40,31 +40,55 @@ class PDAgent(mesa.Agent):
         self.move()
         if self.strategy in ["C", "D"]:
             self.play_pd_game()
+            self.update_strategy()
         else :
            pass
 
     def play_pd_game(self):
-        cell_mates = self.model.grid.get_cell_list_contents([self.pos])
-        if len(cell_mates) > 0 :
-            other = self.random.choice(cell_mates)
+        """
+        Implementation of the prisoner's dilemma.
+
+        Returns
+        -------
+        None.
+
+        """
+        neighs = self.model.grid.get_neighbors(self.pos, moore=False)
+        if len(neighs) > 0 :
+            other = self.random.choice(neighs)
             s0 = self.strategy          
             s1 = other.strategy
-        payoff = []
-        
-        if s0 == s1:
-            if s0 == 'D': # s1 =='D'
-                payoff = [0, 0]
-            else: # s1 == s2 == 'C'
-                payoff = [1, 1]
-        else:
-            if s0 == 'D':
-                payoff = [self.temptation, 0]
-            else: # s0 == 'C'
-                payoff = [0, self.temptation]
-        
-        other.wealth += payoff[1]
-        self.wealth += payoff[0]
+            payoff = []
+            
+            if s0 == s1:
+                if s0 == 'D': # s1 =='D'
+                    payoff = [0, 0]
+                else: # s1 == s2 == 'C'
+                    payoff = [1, 1]
+            else:
+                if s0 == 'D':
+                    payoff = [1+self.temptation, 0]
+                else: # s0 == 'C'
+                    payoff = [0, 1+self.temptation]
+            
+            other.wealth += payoff[1]
+            self.wealth += payoff[0]
 
+    def update_strategy(self):
+        neighs = self.model.grid.get_neighbors(self.pos, moore=False)
+        # print("mates", mates)
+        if len(neighs) > 0 :
+            other = self.random.choice(neighs)
+            w0 = self.wealth
+            w1 = other.wealth
+            payoff = []
+            
+            if w0 > self.model.temptation+w1 :            
+                other.strategy = self.strategy
+            elif w1 > 2*self.model.temptation+w0 :
+                self.strategy = other.strategy
+            else:
+                pass    
 
     # movement of the agent -- not implemented yet
     def move(self):
@@ -90,6 +114,7 @@ class PDGridModel(mesa.Model):
         self.running = True
         self.grid = ms.MultiGrid(width, height, True)
         self.schedule = mt.RandomActivation(self)
+        self.temptation = temptation
 
         # create and add agents
         for i in range(self.num_agents):
