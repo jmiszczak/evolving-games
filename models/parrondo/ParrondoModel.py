@@ -9,8 +9,8 @@ class ParrondoAgent(mesa.Agent):
     """
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
-        self.wealth = 100
-        self.eps = 0.055
+        self.wealth = model.agent_init_wealth
+        self.eps = 0.1
         self.m = 3
 
     def step(self):
@@ -26,7 +26,7 @@ class ParrondoAgent(mesa.Agent):
         # calculation of the gain
         if game == 'A':
             # coin 1
-            gain = rnd.choice([1,-1],p=[0.5-self.eps, 0.5+self.eps])
+            gain = rnd.choice([1,-1], p=[0.5-self.eps, 0.5+self.eps])
         elif game == 'B':
             if self.wealth % self.m == 0:
                 # coin 2
@@ -35,12 +35,14 @@ class ParrondoAgent(mesa.Agent):
                 # coin 3
                 gain = rnd.choice([1,-1], p=[0.75-self.eps, 0.25+self.eps])
 
-        other.wealth += gain 
         self.wealth -= gain
+        other.wealth += gain  
 
 class ParrondoModel(mesa.Model):
-    def __init__(self, N):
+    
+    def __init__(self, N, agent_init_wealth):
         self.num_agents = N
+        self.agent_init_wealth = agent_init_wealth
         self.schedule = mt.RandomActivation(self)
         # create and add agents
         for i in range(self.num_agents):
