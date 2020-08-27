@@ -3,14 +3,10 @@ import mesa.time as mt
 import mesa.space as ms
 import mesa.datacollection as md
 
-import numpy.random as rnd
+import sys
+sys.path.append('../')
 
-def gini(model):
-    agent_wealths = [agent.wealth for agent in model.schedule.agents]
-    x = sorted(agent_wealths)
-    N = model.num_agents
-    B = sum( xi * (N-i) for i,xi in enumerate(x) ) / (N*sum(x))
-    return (1 + (1/N) - 2*B)
+import indicators
 
 class MoneyAgent(mesa.Agent):
     """An agent with initial amount of money"""
@@ -65,7 +61,7 @@ class MoneyGridModel(mesa.Model):
 
         # add data collector
         self.datacollector = md.DataCollector(
-            model_reporters = {"Gini": gini},
+            model_reporters = {"Gini": indicators.gini},
             agent_reporters = {"Wealth": "wealth"}
             )
 
