@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# %%
+#%%
 from IPython.core.display import display
 
 import numpy as np
@@ -12,15 +12,20 @@ mpl.rc('text', usetex = True)
 mpl.rc('font', size = 14)
 
 
-# %% local definitions
+#%% local definitions
+
+import os
+os.chdir(os.path.dirname(__file__))
+
+from ParrondoGridModel import ParrondoGridModel
+
+#%%
 import sys
-sys.path.append('../')
-print(sys.path)
-from parrondo.ParrondoGridModel import ParrondoGridModel
+sys.path.append("..")
 
 import indicators
 
-# %%
+#%%
 init_wealth = 20
 
 # store data from num_runs
@@ -40,8 +45,7 @@ grid_height = 50
 wealth_data = []
 agent_counts = np.zeros((grid_width, grid_height))
 
-
-# %%
+#%%
 
 for _ in range(num_runs):
     # create a model
@@ -55,20 +59,20 @@ for _ in range(num_runs):
         wealth_data.append(a.wealth)
 
 
-# %%
+#%%
 fig = figure.Figure(figsize=(8,6))
 axs = fig.add_subplot()
 axs.hist(wealth_data, density=True, histtype='step')
 display(fig)
 
 
-# %%
+#%%
 for cell in model.grid.coord_iter():
     cell_content, x, y = cell
     agent_counts[x][y] = len(cell_content)    
 
 
-# %%
+#%%
 fig = mpl.figure.Figure(figsize=(8,8))
 axs = fig.add_subplot()
 
@@ -78,23 +82,22 @@ fig.colorbar(mpl.cm.ScalarMappable(cmap=mpl.cm.Greys, norm=norm), ax=axs)
 
 display(fig)
 
-# %%
+#%%
 
 gini = model.datacollector.get_model_vars_dataframe()
 gini.plot()
 
-# %%
+print(gini.describe())
+
+#%%
 agent_wealth = model.datacollector.get_agent_vars_dataframe()
 print(agent_wealth.head())
 
 one_agent_wealth = agent_wealth.xs(20, level="AgentID")
 one_agent_wealth.Wealth.plot()
 
-# %%
 
-print(gini.describe())
-
-# %%
+#%%
 # 
 # Batch execution of the simulations
 #
@@ -122,19 +125,19 @@ batch_run = mb.BatchRunner(
 batch_run.run_all()
 
 
-# %%
+#%%
 run_data = batch_run.get_model_vars_dataframe()
 run_data.head()
 
 
-# %%
+#%%
 fig = mpl.figure.Figure(figsize=(8,8))
 axs = fig.add_subplot()
 axs.scatter(run_data.N, run_data.Gini)
 display(fig)
 
 
-# %%
+#%%
 run_data.to_csv('ParrondoGridModel.zip', index=False, compression=dict(method='zip', archive_name='data.csv'))
 
 
