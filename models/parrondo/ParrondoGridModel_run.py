@@ -26,20 +26,20 @@ sys.path.append("..")
 import indicators
 
 #%%
-init_wealth = 20
+init_wealth = 100
 
 # store data from num_runs
-num_runs = 10
+num_runs = 100
 
 # each run has num_steps steps
-num_steps = 100
+num_steps = 50
 
 # each model has num_agents agents
-num_agents = 500
+num_agents = 50
 
 # size of the grid
-grid_width = 50
-grid_height = 50
+grid_width = 10
+grid_height = 10
 
 # data from all simulations
 wealth_data = []
@@ -62,7 +62,8 @@ for _ in range(num_runs):
 #%%
 fig = figure.Figure(figsize=(8,6))
 axs = fig.add_subplot()
-axs.hist(wealth_data, density=True, histtype='step')
+axs.hist(wealth_data, density=True, histtype='step',bins=int(num_runs/2))
+axs.set_xlabel('Wealth')
 display(fig)
 
 
@@ -93,7 +94,7 @@ print(gini.describe())
 agent_wealth = model.datacollector.get_agent_vars_dataframe()
 print(agent_wealth.head())
 
-one_agent_wealth = agent_wealth.xs(20, level="AgentID")
+one_agent_wealth = agent_wealth.xs(10, level="AgentID")
 one_agent_wealth.Wealth.plot()
 
 
@@ -106,19 +107,19 @@ from ParrondoGridModel import ParrondoGridModel
 import mesa.batchrunner as mb
 
 fixed_params = {
-        "width": 50,
-        "height": 50,
-        "init_wealth": 20
+        "width": grid_width,
+        "height": grid_height,
+        "init_wealth": init_wealth
         }
 
-variable_params = { "N" : range(50, 500, 50)}
+variable_params = { "N" : range(50, 250, 25)}
 
 batch_run = mb.BatchRunner(
         ParrondoGridModel,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=10,
-        max_steps=10,
+        iterations=30,
+        max_steps=20,
         model_reporters={"Gini": indicators.gini}
         )
 
@@ -134,6 +135,8 @@ run_data.head()
 fig = mpl.figure.Figure(figsize=(8,8))
 axs = fig.add_subplot()
 axs.scatter(run_data.N, run_data.Gini)
+axs.set_xlabel('Number of agents')
+axs.set_ylabel('Gini index')
 display(fig)
 
 
