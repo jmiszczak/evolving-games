@@ -16,11 +16,12 @@ class ParrondoAgent(mesa.Agent):
     An agent with initial amount of money. Values of epsilon and M are defined
     here.
     """
-    def __init__(self, unique_id, model):
+    def __init__(self, unique_id, model, policy, eps):
         super().__init__(unique_id, model)
-        self.wealth = model.agent_init_wealth
-        self.eps = 0.1
+        self.wealth = rnd.randint(model.agent_init_wealth/2,3*model.agent_init_wealth/2) 
+        self.eps = eps
         self.m = 3
+        self.policy = policy
         
     # single step of the evolution
     def step(self):
@@ -52,15 +53,23 @@ class ParrondoAgent(mesa.Agent):
             other = self.random.choice(cell_mates)
         
             # policy for choosing the game
-            #game = rnd.choice(['A', 'B'], p=[0.25, 0.75]) #  non-uniform random policy
-            game = rnd.choice(['A', 'B'], p=[0.5, 0.5]) #  uniform random policy
+            if self.policy == 'biased-towards-B':
+                game = rnd.choice(['A', 'B'], p=[0.25, 0.75]) #  non-uniform random policy with prefered B
+            elif self.policy == 'biased-towards-A':
+                game = rnd.choice(['A', 'B'], p=[0.75, 0.25]) #  non-uniform random policy with prefered A
+            elif self.policy == 'only-A':
+                game = 'A' # deterministic with prefered A
+            elif self.policy == 'only-B':
+                game = 'B' # deterministic with prefered B
+            else: # default policy is uniform
+                game = rnd.choice(['A', 'B'], p=[0.5, 0.5]) #  uniform random policy
             
             # calculation of the gain
             if game == 'A':
                 # coin 1
                 gain = rnd.choice([1,-1], p=[0.5-self.eps, 0.5+self.eps])
             elif game == 'B':
-                if self.wealth % self.m == 0:
+                if other.wealth % self.m == 0:
                     # coin 2
                     gain = rnd.choice([1,-1], p=[0.10-self.eps, 0.90+self.eps])
                 else : 
@@ -71,11 +80,12 @@ class ParrondoAgent(mesa.Agent):
             other.wealth += gain
             
         else :
-            pass
+            self.move()
+            self.play()
 
 class ParrondoGridModel(mesa.Model):
     
-    def __init__(self, N, width, height, init_wealth):
+    def __init__(self, N, width, height, init_wealth, default_policy, default_eps):
         self.num_agents = N
         self.agent_init_wealth = init_wealth
         
@@ -86,7 +96,7 @@ class ParrondoGridModel(mesa.Model):
         # create and add agents
         for i in range(self.num_agents):
             # create an agent
-            a = ParrondoAgent(i, self)
+            a = ParrondoAgent(i, self, default_policy, default_eps)
             # add it to the scheduler
             self.schedule.add(a)
             # assign it to a location
