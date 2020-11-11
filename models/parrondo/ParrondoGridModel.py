@@ -18,7 +18,7 @@ class ParrondoAgent(mesa.Agent):
     """
     def __init__(self, unique_id, model, policy, eps):
         super().__init__(unique_id, model)
-        self.wealth = model.agent_init_wealth*(unique_id+1)
+        self.wealth = model.agent_init_wealth
         self.eps = eps
         self.m = 3
         self.policy = policy
@@ -50,29 +50,29 @@ class ParrondoAgent(mesa.Agent):
         # play against random opponent from the current cell
         cell_mates = self.model.grid.get_cell_list_contents([self.pos])
         
-        if len(cell_mates) > 0 :
+        if len(cell_mates) > -1 :
             other = self.random.choice(cell_mates)
         
-            if other.wealth > 1:
+            if other.wealth > 2:
                 # policy for choosing the game
                 if self.policy == 'biasedB':
                     game = rnd.choice(['A', 'B'], p=[0.25, 0.75]) #  non-uniform random policy with preferred B
                 elif self.policy == 'biasedA':
                     game = rnd.choice(['A', 'B'], p=[0.75, 0.25]) #  non-uniform random policy with preferred A
                 elif self.policy == 'A':
-                    game = 'A' # deterministic with prefered A
+                    game = 'A' # deterministic A
                 elif self.policy == 'B':
-                    game = 'B' # deterministic with prefered B
-                elif self.policy == 'uniform': # default policy is uniform
+                    game = 'B' # deterministic B
+                elif self.policy == 'uniform':
                     game = rnd.choice(['A', 'B'], p=[0.5, 0.5]) #  uniform random policy
-                elif self.policy == 'AB':
+                elif self.policy == 'AB': # deterministic ABABAB...
                     if self.game_hist[-1] == 'A':
                         game = 'B'
                     elif self.game_hist[-1] == 'B':
                         game = 'A'
                     else:
                         game = 'A'
-                elif self.policy == 'AABB':
+                elif self.policy == 'AABB': # deterministic AABBAABB...
                     if self.game_hist[-1] == 'A':
                         if self.game_hist[-2] == 'A':
                             game = 'B'
@@ -99,29 +99,39 @@ class ParrondoAgent(mesa.Agent):
                         gain = rnd.choice([1,-1], p=[0.75-self.eps, 0.25+self.eps])
 
                 
+                # Variant 1
                 # interpret the gain in terms of the inequality reduction
                 # this simulates the Matthew effect
                 
                 # winning means that the effect is reduced
-                if gain == 1:
-                    if self.wealth < other.wealth :
-                        self.wealth += 1
-                        other.wealth -= 1
-                    elif self.wealth > other.wealth :
-                        self.wealth -= 1
-                        other.wealth += 1
-                    else:
-                        pass
-                # loosing means that the effect is boosted
-                elif gain == -1:
-                    if self.wealth < other.wealth :
-                        self.wealth -= 1
-                        other.wealth += 1
-                    elif self.wealth > other.wealth :
-                        self.wealth += 1
-                        other.wealth -= 1
-                else:
-                    pass
+                # wealth_boost = 1
+                # if gain == 1:
+                #     if self.wealth < other.wealth :
+                #         self.wealth += wealth_boost
+                #         # other.wealth -= wealth_boost
+                #     elif self.wealth > other.wealth :
+                #         self.wealth -= wealth_boost
+                #         # other.wealth += wealth_boost
+                #     else:
+                #         pass
+                # # loosing means that the effect is boosted
+                # elif gain == -1:
+                #     if self.wealth < other.wealth :
+                #         self.wealth -= wealth_boost
+                #         # other.wealth += wealth_boost
+                #     elif self.wealth > other.wealth :
+                #         self.wealth += wealth_boost
+                #         # other.wealth -= wealth_boost
+                # else:
+                #     pass
+                
+                # Variant 2          
+                # simple interpretation of the gain
+                # might be of zero-sum or not
+                
+                self.wealth += gain
+                # # other.wealth -= gain
+                
                 
             else:
                 pass
@@ -151,7 +161,11 @@ class ParrondoGridModel(mesa.Model):
 
         # add data collector
         self.datacollector = md.DataCollector(
-            model_reporters = {"Gini index": indicators.gini},
+            model_reporters = {"Gini index": indicators.gini_index, 
+                               "Total wealth": indicators.total_wealth, 
+                               "Mean wealth": indicators.mean_wealth,
+                               "Median wealth": indicators.median_wealth,
+                               },
             agent_reporters = {"Wealth": "wealth"}
             )
 
