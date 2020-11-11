@@ -1,60 +1,60 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-#%%
-from IPython.core.display import display
-
+#%% global packages
+import mesa.batchrunner as mb
 import numpy as np
 
+from IPython.core.display import display
+
 import matplotlib as mpl
-import matplotlib.figure as figure
-# mpl.rc('text', usetex = True)
-mpl.rc('font', size = 14)
+# import matplotlib.figure as figure
+mpl.rc('text', usetex = True)
+mpl.rc('font', size = 10)
 
 
-#%% local definitions
+#%% local functions
 
-import os
-os.chdir(os.path.dirname(__file__))
+# import os
+#os.chdir(os.path.dirname(__file__))
 
 from ParrondoGridModel import ParrondoGridModel
 
-import mesa.batchrunner as mb
-
-
-#%%
 import sys
 sys.path.append("..")
 
 import indicators
 
-#%%
+#%% simulation parameters
 
 # initial capital
-init_wealth = 10
+init_wealth = 100
 
 # bias in the Parronod scheme
-default_policy = 'uniform'
-default_eps = 0.05
+default_policy = 'A'
+default_eps = 0.002
 
 # store data from num_runs
 num_runs = 1
 
 # each run has num_steps steps
-num_steps = 2500
+num_steps = 5000
 
 # size of the grid
-grid_width = 6
-grid_height = 6
+grid_width = 5
+grid_height = 5
 
 # each model has num_agents agents
-num_agents = grid_width*grid_height*10
+num_agents = grid_width*grid_height
 
 # data from all simulations
 wealth_data = []
 agent_counts = np.zeros((grid_width, grid_height))
 
-#%%
+# strin with descriptions used in plots
+plot_desc = 'game sequence: '+default_policy+', grid=(' + str(grid_width) +','+str(grid_height) +')'
+
+#%% simulaiton with fixed parameters
 
 for _ in range(num_runs):
     # create a model
@@ -67,17 +67,39 @@ for _ in range(num_runs):
     for a in model.schedule.agents:
         wealth_data.append(a.wealth)
 
-#%%
 
-gini = model.datacollector.get_model_vars_dataframe()
-gini.plot(title=default_policy, ylim=(0.2,0.5))
 
-# print(gini.describe())
+#%% wealth data for some agents
+agent_wealth = model.datacollector.get_agent_vars_dataframe()
+print(agent_wealth.head())
+
+# one_agent_wealth = agent_wealth.xs(3, level="AgentID")
+# agent_wealth.xs(1, level="AgentID").Wealth.plot(ylim=(0,1000))
+for agn in range(num_agents):
+    agent_wealth.xs(agn, level="AgentID").Wealth.plot(ylim=(0,500), title='Wealth for agents, ' + plot_desc )
+        
+
+#%% plot of the Gini index
+
+data = model.datacollector.get_model_vars_dataframe()
+gini_index_data = data.get('Gini index')
+
+gini_plot=gini_index_data.plot(ylim=(0,1), title='Gini index, ' + plot_desc)
+# print(gini_index_data.describe())
+display(gini_plot)
+#%% plot of the mean wealth
+
+data = model.datacollector.get_model_vars_dataframe()
+median_wealth_data=data.get('Median wealth')
+median_wealth_data.plot(title='Median wealth, ' + plot_desc, ylim=(0,200))
+
+print(median_wealth_data.describe())
+
 
 #%%
 # fig = figure.Figure(figsize=(8,6))
 # axs = fig.add_subplot()
-# axs.hist(wealth_data, density=True, histtype='step',bins=int(num_runs/2))
+# axs.hist(wealth_data, density=True, histtype='step', bins=int(num_runs/2))
 # axs.set_xlabel('Wealth')
 # display(fig)
 
@@ -98,12 +120,6 @@ gini.plot(title=default_policy, ylim=(0.2,0.5))
 
 
 
-#%%
-agent_wealth = model.datacollector.get_agent_vars_dataframe()
-print(agent_wealth.head())
-
-one_agent_wealth = agent_wealth.xs(1, level="AgentID")
-one_agent_wealth.Wealth.plot()
 
 
 #%%
@@ -116,39 +132,51 @@ fixed_params = {
         "width": grid_width,
         "height": grid_height,
         "init_wealth": init_wealth,
-        "default_policy": default_policy, 
+        # "default_policy": default_policy, 
         "default_eps": default_eps
         }
 
-variable_params = { "N" : range(36, 73, 24)}
-
+variable_params = { 
+        "N" : range(25, 50, 10),
+        "default_policy" : ['A', 'B', 'AB', 'uniform']
+        }
+         
 batch_run = mb.BatchRunner(
         ParrondoGridModel,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=5,
-        max_steps=1000,
-        model_reporters={"Gini": indicators.gini}
+        iterations=50,
+        max_steps=500,
+        model_reporters={"Gini index": indicators.gini_index, "Total wealth": indicators.total_wealth}
         )
 
 batch_run.run_all()
-
 
 #%%
 run_data = batch_run.get_model_vars_dataframe()
 run_data.head()
 
+#%%
 fig = mpl.figure.Figure(figsize=(8,8))
-axs = fig.add_subplot()
-axs.scatter(run_data.N, run_data.Gini)
-axs.set_xlabel('Number of agents')
-axs.set_ylabel('Gini index')
-axs.set_title(default_policy+ ", eps=" +str(default_eps))
+for i,curr_policy in enumerate(['A', 'B', 'uniform', 'AB']):#= 'A'
+
+
+    axs = fig.add_subplot(221+i)
+    plot_desc = 'game sequence: '+curr_policy+', grid=(' + str(grid_width) +','+str(grid_height) +')'
+    axs.scatter(run_data[(run_data.default_policy==curr_policy)].N,run_data[(run_data.default_policy==curr_policy)]['Gini index'],marker='x')
+    #axs.set_xlabel('Number of agents')
+    axs.set_xlim((1,5))
+    axs.set_ylim((-0.01,0.2))
+    # axs.set_ylabel('Gini index')
+    axs.set_title(plot_desc)
+
 display(fig)
 
+fig.tight_layout()
+fig.savefig("plots/grid_"+str(grid_width) +'x'+str(grid_height) +"_50runs_500steps-25.pdf")
 
 #%%
-run_data.to_csv('ParrondoGridModel.zip', index=False, compression=dict(method='zip', archive_name='data.csv'))
+run_data.to_csv("data/grid_"+str(grid_width) +'x'+str(grid_height) +"_50runs_500steps.zip", index=False, compression=dict(method='zip', archive_name='data.csv'))
 
 
 
