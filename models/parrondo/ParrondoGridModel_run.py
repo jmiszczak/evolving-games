@@ -15,8 +15,8 @@ mpl.rc('font', size = 10)
 
 #%% local functions
 
-# import os
-#os.chdir(os.path.dirname(__file__))
+import os
+os.chdir(os.path.dirname(__file__))
 
 from ParrondoGridModel import ParrondoGridModel
 
@@ -41,8 +41,8 @@ num_runs = 1
 num_steps = 5000
 
 # size of the grid
-grid_width = 5
-grid_height = 5
+grid_width = 15
+grid_height = 15
 
 # each model has num_agents agents
 num_agents = grid_width*grid_height
@@ -68,7 +68,6 @@ for _ in range(num_runs):
         wealth_data.append(a.wealth)
 
 
-
 #%% wealth data for some agents
 agent_wealth = model.datacollector.get_agent_vars_dataframe()
 print(agent_wealth.head())
@@ -87,6 +86,7 @@ gini_index_data = data.get('Gini index')
 gini_plot=gini_index_data.plot(ylim=(0,1), title='Gini index, ' + plot_desc)
 # print(gini_index_data.describe())
 display(gini_plot)
+
 #%% plot of the mean wealth
 
 data = model.datacollector.get_model_vars_dataframe()
@@ -132,12 +132,11 @@ fixed_params = {
         "width": grid_width,
         "height": grid_height,
         "init_wealth": init_wealth,
-        # "default_policy": default_policy, 
         "default_eps": default_eps
         }
 
 variable_params = { 
-        "N" : range(25, 50, 10),
+        "N" : range(10, 100, 5),
         "default_policy" : ['A', 'B', 'AB', 'uniform']
         }
          
@@ -145,9 +144,13 @@ batch_run = mb.BatchRunner(
         ParrondoGridModel,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=50,
+        iterations=100,
         max_steps=500,
-        model_reporters={"Gini index": indicators.gini_index, "Total wealth": indicators.total_wealth}
+        model_reporters={
+            "Gini index" : indicators.gini_index,
+            "Total wealth" : indicators.total_wealth,
+            "Mean wealth" : indicators.mean_wealth
+            }
         )
 
 batch_run.run_all()
@@ -156,27 +159,27 @@ batch_run.run_all()
 run_data = batch_run.get_model_vars_dataframe()
 run_data.head()
 
-#%%
 fig = mpl.figure.Figure(figsize=(8,8))
 for i,curr_policy in enumerate(['A', 'B', 'uniform', 'AB']):#= 'A'
-
 
     axs = fig.add_subplot(221+i)
     plot_desc = 'game sequence: '+curr_policy+', grid=(' + str(grid_width) +','+str(grid_height) +')'
     axs.scatter(run_data[(run_data.default_policy==curr_policy)].N,run_data[(run_data.default_policy==curr_policy)]['Gini index'],marker='x')
     #axs.set_xlabel('Number of agents')
-    axs.set_xlim((1,5))
-    axs.set_ylim((-0.01,0.2))
+    axs.set_xlim((1,50))
+    axs.set_ylim((-0.01,0.3))
     # axs.set_ylabel('Gini index')
     axs.set_title(plot_desc)
 
 display(fig)
 
+exp_desc = "grid_"+str(grid_width)+'x'+str(grid_height)+"_"+str(batch_run.iterations)+"runs_"+str(batch_run.max_steps)+"steps"
+
 fig.tight_layout()
-fig.savefig("plots/grid_"+str(grid_width) +'x'+str(grid_height) +"_50runs_500steps-25.pdf")
+fig.savefig("plots/"+ exp_desc +".pdf")
 
 #%%
-run_data.to_csv("data/grid_"+str(grid_width) +'x'+str(grid_height) +"_50runs_500steps.zip", index=False, compression=dict(method='zip', archive_name='data.csv'))
+run_data.to_csv("data/"+exp_desc+".zip", index=False, compression=dict(method='zip', archive_name='data.csv'))
 
 
 
