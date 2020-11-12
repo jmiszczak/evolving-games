@@ -110,34 +110,33 @@ class ParrondoAgent(mesa.Agent):
                 # this simulates the Matthew effect
                 
                 # winning means that the effect is reduced
-                # wealth_boost = 1
-                # if gain == 1:
-                #     if self.wealth < other.wealth :
-                #         self.wealth += wealth_boost
-                #         # other.wealth -= wealth_boost
-                #     elif self.wealth > other.wealth :
-                #         self.wealth -= wealth_boost
-                #         # other.wealth += wealth_boost
-                #     else:
-                #         pass
-                # # loosing means that the effect is boosted
-                # elif gain == -1:
-                #     if self.wealth < other.wealth :
-                #         self.wealth -= wealth_boost
-                #         # other.wealth += wealth_boost
-                #     elif self.wealth > other.wealth :
-                #         self.wealth += wealth_boost
-                #         # other.wealth -= wealth_boost
-                # else:
-                #     pass
+                wealth_boost = 1
+                if gain == 1:
+                    if self.wealth < other.wealth :
+                        self.wealth += wealth_boost
+                        # other.wealth -= wealth_boost
+                    elif self.wealth > other.wealth :
+                        self.wealth -= wealth_boost
+                        # other.wealth += wealth_boost
+                    else:
+                        pass
+                # loosing means that the effect is boosted
+                elif gain == -1:
+                    if self.wealth < other.wealth :
+                        self.wealth -= wealth_boost
+                        # other.wealth += wealth_boost
+                    elif self.wealth > other.wealth :
+                        self.wealth += wealth_boost
+                        # other.wealth -= wealth_boost
+                else:
+                    pass
                 
                 # Variant 2          
                 # simple interpretation of the gain
                 # might be of zero-sum or not
                 
-                self.wealth += gain
-                # # other.wealth -= gain
-                
+                # self.wealth += gain
+                # other.wealth -= gain
                 
             else:
                 pass
