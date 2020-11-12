@@ -1,7 +1,7 @@
 # %%
 
-import os
-os.chdir(os.path.dirname(__file__))
+#import os
+#os.chdir(os.path.dirname(__file__))
 
 # %%
 import matplotlib as mpl
