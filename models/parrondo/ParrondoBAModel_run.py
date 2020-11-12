@@ -3,7 +3,8 @@
 
 #%% global packages
 import mesa.batchrunner as mb
-import numpy as np
+
+import networkx as nx
 
 from IPython.core.display import display
 
@@ -18,7 +19,7 @@ mpl.rc('font', size = 10)
 import os
 os.chdir(os.path.dirname(__file__))
 
-from ParrondoGridModel import ParrondoGridModel
+from ParrondoGraphModel import ParrondoGraphModel
 
 import sys
 sys.path.append("..")
@@ -31,34 +32,39 @@ import indicators
 init_wealth = 100
 
 # bias in the Parronod scheme
-default_policy = 'uniform'
+default_policy = 'A'
 default_eps = 0.002
 
 # store data from num_runs
 num_runs = 1
 
 # each run has num_steps steps
-num_steps = 100
+num_steps = 5000
 
-# size of the grid
-grid_width = 15
-grid_height = 15
+# size of the BA network
+network_size = 20
+
+# m param
+m_param = 3
+
+# graph used in the experiment
+ba_graph = nx.generators.barabasi_albert_graph(network_size, m_param)
 
 # each model has num_agents agents
-num_agents = grid_width*grid_height
+num_agents = network_size
 
 # data from all simulations
 wealth_data = []
-agent_counts = np.zeros((grid_width, grid_height))
+
 
 # strin with descriptions used in plots
-plot_desc = 'game sequence: '+default_policy+', grid=(' + str(grid_width) +','+str(grid_height) +')'
+plot_desc = 'game sequence: '+default_policy+', BA(' + str(network_size) +','+str(m_param) +')'
 
 #%% simulaiton with fixed parameters
 
 for _ in range(num_runs):
     # create a model
-    model = ParrondoGridModel(num_agents, grid_width, grid_height, init_wealth, default_policy, default_eps)
+    model = ParrondoGraphModel(num_agents, ba_graph, init_wealth, default_policy, default_eps)
 
     # execute num_steps steps
     for _ in range(num_steps):
