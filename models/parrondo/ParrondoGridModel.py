@@ -13,8 +13,14 @@ import indicators
 
 class ParrondoAgent(mesa.Agent):
     """
-    An agent with initial amount of money and the policy for choosin games.
-    Values of epsilon and M used in the Parronodo scheme are defined here.
+    Implementation of an agent with initial amount of money and the policy for
+    choosing games based on the Parrondo scheme. The goal of the agent is to
+    decrease the inequality in the wealth distribution.
+
+    Values of epsilon and M used in the Parrondo scheme are defined here.
+
+    Each agent stores the history of played games. This can be used to include
+    new deterministic policies for choosing games. 
     """
     def __init__(self, unique_id, model, policy, eps):
         super().__init__(unique_id, model)
