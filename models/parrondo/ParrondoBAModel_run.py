@@ -3,8 +3,9 @@
 
 #%% global packages
 import mesa.batchrunner as mb
-
+# import numpy as np
 import networkx as nx
+# import pandas as pd
 
 from IPython.core.display import display
 
@@ -19,11 +20,10 @@ mpl.rc('font', size = 10)
 import os
 os.chdir(os.path.dirname(__file__))
 
-from ParrondoGraphModel import ParrondoGraphModel
-
 import sys
 sys.path.append("..")
 
+from ParrondoGraphModel import ParrondoGraphModel
 import indicators
 
 #%% simulation parameters
@@ -32,33 +32,32 @@ import indicators
 init_wealth = 100
 
 # bias in the Parronod scheme
-default_policy = 'A'
-default_eps = 0.002
+default_policy = 'AB'
+default_eps = 0.1
 
 # store data from num_runs
 num_runs = 1
 
 # each run has num_steps steps
-num_steps = 5000
+num_steps = 100
 
 # size of the BA network
 network_size = 20
 
 # m param
-m_param = 3
+m_param = 15
 
 # graph used in the experiment
 ba_graph = nx.generators.barabasi_albert_graph(network_size, m_param)
 
 # each model has num_agents agents
-num_agents = network_size
+num_agents = 2*network_size
 
 # data from all simulations
 wealth_data = []
 
-
-# strin with descriptions used in plots
-plot_desc = 'game sequence: '+default_policy+', BA(' + str(network_size) +','+str(m_param) +')'
+# string with descriptions used in plots
+plot_desc = 'game sequence: '+default_policy+', BAnet(' + str(network_size) +','+str(m_param) +')'
 
 #%% simulaiton with fixed parameters
 
@@ -74,14 +73,14 @@ for _ in range(num_runs):
         wealth_data.append(a.wealth)
 
 
-#%% wealth data for some agents
-agent_wealth = model.datacollector.get_agent_vars_dataframe()
-print(agent_wealth.head())
+# #%% wealth data for some agents
+# agent_wealth = model.datacollector.get_agent_vars_dataframe()
+# print(agent_wealth.head())
 
-# one_agent_wealth = agent_wealth.xs(3, level="AgentID")
-# agent_wealth.xs(1, level="AgentID").Wealth.plot(ylim=(0,1000))
-for agn in range(num_agents):
-    agent_wealth.xs(agn, level="AgentID").Wealth.plot(ylim=(0,500), title='Wealth for agents, ' + plot_desc )
+# # one_agent_wealth = agent_wealth.xs(3, level="AgentID")
+# # agent_wealth.xs(1, level="AgentID").Wealth.plot(ylim=(0,1000))
+# for agn in range(num_agents):
+#     agent_wealth.xs(agn, level="AgentID").Wealth.plot(ylim=(0,500), title='Wealth for agents, ' + plot_desc )
         
 
 #%% plot of the Gini index
@@ -95,11 +94,11 @@ display(gini_plot)
 
 #%% plot of the mean wealth
 
-data = model.datacollector.get_model_vars_dataframe()
-median_wealth_data=data.get('Median wealth')
-median_wealth_data.plot(title='Median wealth, ' + plot_desc, ylim=(0,200))
+# data = model.datacollector.get_model_vars_dataframe()
+# median_wealth_data=data.get('Median wealth')
+# median_wealth_data.plot(title='Median wealth, ' + plot_desc, ylim=(0,200))
 
-print(median_wealth_data.describe())
+# print(median_wealth_data.describe())
 
 
 #%%
@@ -124,68 +123,86 @@ print(median_wealth_data.describe())
 
 # display(fig)
 
+##############################################################################
+############################## BATCH EXECUTION ###############################
+##############################################################################
 
+#%% simulation parameters for batch execution
 
+# initial capital
+init_wealth = 2
 
+# bias in the Parronod scheme
+default_eps = 0.002
 
-#%%
-# 
-# Batch execution of the simulations
+### graph used in the experiemnt
+# size of the BA network
+network_size = 100
+
+# m param
+m_param = 10
+
+# graph used in the experiment
+ba_graph = nx.generators.barabasi_albert_graph(network_size, m_param)
+nx.draw(ba_graph)
+
+#%% batch execution of the simulations
 #
 
-
 fixed_params = {
-        "width": grid_width,
-        "height": grid_height,
+        "G": ba_graph,
         "init_wealth": init_wealth,
         "default_eps": default_eps
         }
 
 variable_params = { 
-        "N" : range(10, 100, 5),
-        "default_policy" : ['A', 'B', 'AB', 'uniform']
+        "N" : range(10, 101, 10),
+        "default_policy" : ['A', 'B', 'AABB', 'uniform']
         }
          
 batch_run = mb.BatchRunner(
-        ParrondoGridModel,
+        ParrondoGraphModel,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=100,
-        max_steps=500,
+        iterations=1,
+        max_steps=10,
         model_reporters={
-            "Gini index" : indicators.gini_index,
-            "Total wealth" : indicators.total_wealth,
-            "Mean wealth" : indicators.mean_wealth
+            "Gini index" : indicators.gini_index
             }
         )
 
+print("[INFO] Executing", len(variable_params["N"])*len(variable_params["default_policy"])*batch_run.iterations, "iterations.", flush=True)
 batch_run.run_all()
+
+#%% results form the batch execution
+
+exp_desc = "graphBA("+str(network_size)+','+str(m_param)+")_"+str(batch_run.iterations)+"runs_"+str(batch_run.max_steps)+"steps"
 
 #%%
 run_data = batch_run.get_model_vars_dataframe()
 run_data.head()
 
+run_data.to_csv("data/"+exp_desc+".zip", index=False, compression=dict(method='zip', archive_name='data.csv'))
+
+
+#%%
+#run_data = pd.read_csv("data/"+exp_desc+".zip")
+
 fig = mpl.figure.Figure(figsize=(8,8))
-for i,curr_policy in enumerate(['A', 'B', 'uniform', 'AB']):#= 'A'
+for i,curr_policy in enumerate(['A', 'B', 'AABB', 'uniform']):#= 'A'
+# for i,curr_policy in enumerate(['A', 'uniform']):#= 'A'
 
     axs = fig.add_subplot(221+i)
-    plot_desc = 'game sequence: '+curr_policy+', grid=(' + str(grid_width) +','+str(grid_height) +')'
+    plot_desc = 'game sequence: '+curr_policy+", graphBA("+str(network_size)+','+str(m_param)+')'
     axs.scatter(run_data[(run_data.default_policy==curr_policy)].N,run_data[(run_data.default_policy==curr_policy)]['Gini index'],marker='x')
     #axs.set_xlabel('Number of agents')
-    axs.set_xlim((1,50))
-    axs.set_ylim((-0.01,0.3))
+    axs.set_xlim((9,101))
+    axs.grid()
+    axs.set_ylim((-0.01,1))
     # axs.set_ylabel('Gini index')
     axs.set_title(plot_desc)
 
 display(fig)
 
-exp_desc = "grid_"+str(grid_width)+'x'+str(grid_height)+"_"+str(batch_run.iterations)+"runs_"+str(batch_run.max_steps)+"steps"
-
 fig.tight_layout()
 fig.savefig("plots/"+ exp_desc +".pdf")
-
-#%%
-run_data.to_csv("data/"+exp_desc+".zip", index=False, compression=dict(method='zip', archive_name='data.csv'))
-
-
-
