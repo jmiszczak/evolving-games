@@ -10,7 +10,7 @@ sys.path.append('../')
 
 import indicators
 
-from ParrondoGridModel import ParrondoAgent
+from ParrondoAgent import ParrondoAgent
 
 class ParrondoGraphModel(mesa.Model):
     
@@ -18,17 +18,19 @@ class ParrondoGraphModel(mesa.Model):
         self.num_agents = N
         self.agent_init_wealth = init_wealth
         self.running = True
-        self.grid = ms.NetworkGrid(G)
+        self.graph = ms.NetworkGrid(G)
         self.schedule = mt.RandomActivation(self)
 
-        # create and add agents
+        # create and add agents 
         for aid in range(self.num_agents):
+            # select a graph node
+            position = list(self.graph.G.nodes)[rnd.choice(range(len(list(self.graph.G.nodes))))]
             # create an agent
-            agent = ParrondoAgent(aid, self, default_policy, default_eps)
+            agent = ParrondoAgent(aid, self, position, default_policy, default_eps)
             # add it to the scheduler
             self.schedule.add(agent)
             # assign it to a location
-            self.grid.place_agent(agent, rnd.choice(self.grid.G.nodes))
+            self.graph.place_agent(agent, position)
 
         # add data collector
         self.datacollector = md.DataCollector(
