@@ -3,6 +3,7 @@ import mesa.time as mt
 import mesa.space as ms
 import mesa.datacollection as md
 
+import numpy as np
 import numpy.random as rnd
 
 import sys
@@ -24,7 +25,7 @@ class ParrondoAgent(mesa.Agent):
     """
     def __init__(self, unique_id, model, policy, eps):
         super().__init__(unique_id, model)
-        self.wealth = model.agent_init_wealth
+        self.wealth = model.agent_init_wealth+unique_id
         self.eps = eps
         self.m = 3
         self.policy = policy
@@ -56,7 +57,7 @@ class ParrondoAgent(mesa.Agent):
         # play against random opponent from the current cell
         cell_mates = self.model.grid.get_cell_list_contents([self.pos])
         
-        if len(cell_mates) > -1 :
+        if len(cell_mates) > 0 :
             other = self.random.choice(cell_mates)
         
             if other.wealth > 2:
@@ -110,24 +111,15 @@ class ParrondoAgent(mesa.Agent):
                 # this simulates the Matthew effect
                 
                 # winning means that the effect is reduced
-                wealth_boost = 1
                 if gain == 1:
-                    if self.wealth < other.wealth :
-                        self.wealth += wealth_boost
-                        # other.wealth -= wealth_boost
-                    elif self.wealth > other.wealth :
-                        self.wealth -= wealth_boost
-                        # other.wealth += wealth_boost
-                    else:
-                        pass
+                    self.wealth -= np.sign(self.wealth - other.wealth)
+                    other.wealth += np.sign(self.wealth - other.wealth)
+                        
                 # loosing means that the effect is boosted
                 elif gain == -1:
-                    if self.wealth < other.wealth :
-                        self.wealth -= wealth_boost
-                        # other.wealth += wealth_boost
-                    elif self.wealth > other.wealth :
-                        self.wealth += wealth_boost
-                        # other.wealth -= wealth_boost
+                    self.wealth += np.sign(self.wealth - other.wealth)
+                    other.wealth -= np.sign(self.wealth - other.wealth)
+               
                 else:
                     pass
                 
