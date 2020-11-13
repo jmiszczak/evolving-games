@@ -4,6 +4,7 @@ import mesa.space as ms
 import mesa.datacollection as md
 
 import numpy.random as rnd
+import networkx as nx
 
 import sys
 sys.path.append('../')
@@ -14,11 +15,15 @@ from ParrondoAgent import ParrondoAgent
 
 class ParrondoGraphModel(mesa.Model):
     
-    def __init__(self, N, G, init_wealth, default_policy, default_eps):
+    def __init__(self, N, Gf, init_wealth, default_policy, default_eps):
         self.num_agents = N
         self.agent_init_wealth = init_wealth
         self.running = True
-        self.graph = ms.NetworkGrid(G)
+        
+        if type(Gf) == nx.classes.graph.Graph:
+            self.graph = ms.NetworkGrid(Gf)
+        elif type(Gf) == str:
+            self.graph = ms.NetworkGrid(nx.readwrite.read_gexf(Gf))
         self.schedule = mt.RandomActivation(self)
 
         # create and add agents 
