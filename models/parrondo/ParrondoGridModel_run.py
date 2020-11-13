@@ -2,9 +2,10 @@
 # coding: utf-8
 
 #%% global packages
-
 import mesa.batchrunner as mb
 import numpy as np
+import networkx as nx
+# import pandas as pd
 
 from IPython.core.display import display
 
@@ -19,11 +20,10 @@ mpl.rc('font', size = 10)
 import os
 os.chdir(os.path.dirname(__file__))
 
-from ParrondoGridModel import ParrondoGridModel
-
 import sys
 sys.path.append("..")
 
+from ParrondoGraphModel import ParrondoGraphModel
 import indicators
 
 #%% simulation parameters
@@ -32,14 +32,14 @@ import indicators
 init_wealth = 100
 
 # bias in the Parronod scheme
-default_policy = 'uniform'
+default_policy = 'A'
 default_eps = 0.01
 
 # store data from num_runs
 num_runs = 1
 
 # each run has num_steps steps
-num_steps = 1000
+num_steps = 100
 
 # size of the grid
 grid_width = 10
@@ -52,14 +52,17 @@ num_agents = 2*grid_width*grid_height
 wealth_data = []
 agent_counts = np.zeros((grid_width, grid_height))
 
-# strin with descriptions used in plots
+# graph used in the experiments
+graph = nx.generators.lattice.grid_2d_graph(grid_width,grid_height,periodic=True)
+
+# string with descriptions used in plots
 plot_desc = 'game sequence: '+default_policy+', grid=(' + str(grid_width) +','+str(grid_height) +')'
 
 #%% simulation with fixed parameters
 
 for _ in range(num_runs):
     # create a model
-    model = ParrondoGridModel(num_agents, grid_width, grid_height, init_wealth, default_policy, default_eps)
+    model = ParrondoGraphModel(num_agents, graph, init_wealth, default_policy, default_eps)
 
     # execute num_steps steps
     for _ in range(num_steps):
@@ -117,31 +120,48 @@ print(median_wealth_data.describe())
 
 # display(fig)
 
+##############################################################################
+############################## BATCH EXECUTION ###############################
+##############################################################################
+
+#%% simulation parameters for batch execution
+
+# initial capital
+init_wealth = 2
+
+# bias in the Parronod scheme
+default_eps = 0.002
+
+# size of the grid
+grid_width = 10
+grid_height = 10
+
+
+# graph used in the experiments
+graph = nx.generators.lattice.grid_2d_graph(grid_width,grid_height,periodic=True)
+nx.draw(graph)
 
 #%% batch execution of the simulations
 
 fixed_params = {
-        "width": grid_width,
-        "height": grid_height,
+        "G": graph,
         "init_wealth": init_wealth,
         "default_eps": default_eps
         }
 
 variable_params = { 
-        "N" : range(10, 51, 10),
+        "N" : range(10, 101, 10),
         "default_policy" : ['A', 'B', 'AB', 'uniform']
         }
          
 batch_run = mb.BatchRunner(
-        ParrondoGridModel,
+        ParrondoGraphModel,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=50,
-        max_steps=500,
+        iterations=1,
+        max_steps=10,
         model_reporters={
-            "Gini index" : indicators.gini_index,
-            "Total wealth" : indicators.total_wealth,
-            "Mean wealth" : indicators.mean_wealth
+            "Gini index" : indicators.gini_index
             }
         )
 
@@ -150,27 +170,30 @@ batch_run.run_all()
 
 #%% results form the batch execution
 
+exp_desc = "grid_"+str(grid_width)+'x'+str(grid_height)+"_"+str(batch_run.iterations)+"runs_"+str(batch_run.max_steps)+"steps"
+
 run_data = batch_run.get_model_vars_dataframe()
 run_data.head()
+
+run_data.to_csv("data/"+exp_desc+".zip", index=False, compression=dict(method='zip', archive_name='data.csv'))
+
+#%%
+#run_data = pd.read_csv("data/"+exp_desc+".zip")
 
 fig = mpl.figure.Figure(figsize=(8,8))
 for i,curr_policy in enumerate(['A', 'B', 'AB', 'uniform']):#= 'A'
 
     axs = fig.add_subplot(221+i)
     plot_desc = 'game sequence: '+curr_policy+', grid=(' + str(grid_width) +','+str(grid_height) +')'
-    axs.scatter(run_data[(run_data.default_policy==curr_policy)].N,run_data[(run_data.default_policy==curr_policy)]['Gini index'],marker='x')
+    axs.grid()
+    axs.scatter(run_data[(run_data.default_policy==curr_policy)]["N"], run_data[(run_data.default_policy==curr_policy)]['Gini index'], marker='x')
     #axs.set_xlabel('Number of agents')
-    axs.set_xlim((1,50))
-    axs.set_ylim((-0.01,0.3))
+    axs.set_xlim((1,100))
+    axs.set_ylim((-0.01,1))
     # axs.set_ylabel('Gini index')
     axs.set_title(plot_desc)
 
 display(fig)
 
-exp_desc = "grid_"+str(grid_width)+'x'+str(grid_height)+"_"+str(batch_run.iterations)+"runs_"+str(batch_run.max_steps)+"steps"
-
 fig.tight_layout()
 fig.savefig("plots/"+ exp_desc +".pdf")
-
-#%%
-run_data.to_csv("data/"+exp_desc+".zip", index=False, compression=dict(method='zip', archive_name='data.csv'))
