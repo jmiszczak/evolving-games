@@ -2,6 +2,7 @@
 # coding: utf-8
 
 #%% global packages
+
 import mesa.batchrunner as mb
 import numpy as np
 
@@ -32,20 +33,20 @@ init_wealth = 100
 
 # bias in the Parronod scheme
 default_policy = 'uniform'
-default_eps = 0.002
+default_eps = 0.01
 
 # store data from num_runs
 num_runs = 1
 
 # each run has num_steps steps
-num_steps = 100
+num_steps = 1000
 
 # size of the grid
-grid_width = 15
-grid_height = 15
+grid_width = 10
+grid_height = 10
 
 # each model has num_agents agents
-num_agents = grid_width*grid_height
+num_agents = 2*grid_width*grid_height
 
 # data from all simulations
 wealth_data = []
@@ -54,7 +55,7 @@ agent_counts = np.zeros((grid_width, grid_height))
 # strin with descriptions used in plots
 plot_desc = 'game sequence: '+default_policy+', grid=(' + str(grid_width) +','+str(grid_height) +')'
 
-#%% simulaiton with fixed parameters
+#%% simulation with fixed parameters
 
 for _ in range(num_runs):
     # create a model
@@ -68,7 +69,7 @@ for _ in range(num_runs):
         wealth_data.append(a.wealth)
 
 
-#%% wealth data for some agents
+#%% plot of the wealth data for agents
 agent_wealth = model.datacollector.get_agent_vars_dataframe()
 print(agent_wealth.head())
 
@@ -95,14 +96,12 @@ median_wealth_data.plot(title='Median wealth, ' + plot_desc, ylim=(0,200))
 
 print(median_wealth_data.describe())
 
-
 #%%
 # fig = figure.Figure(figsize=(8,6))
 # axs = fig.add_subplot()
 # axs.hist(wealth_data, density=True, histtype='step', bins=int(num_runs/2))
 # axs.set_xlabel('Wealth')
 # display(fig)
-
 
 #%%
 # for cell in model.grid.coord_iter():
@@ -119,14 +118,7 @@ print(median_wealth_data.describe())
 # display(fig)
 
 
-
-
-
-#%%
-# 
-# Batch execution of the simulations
-#
-
+#%% batch execution of the simulations
 
 fixed_params = {
         "width": grid_width,
@@ -136,7 +128,7 @@ fixed_params = {
         }
 
 variable_params = { 
-        "N" : range(10, 100, 5),
+        "N" : range(10, 51, 10),
         "default_policy" : ['A', 'B', 'AB', 'uniform']
         }
          
@@ -144,7 +136,7 @@ batch_run = mb.BatchRunner(
         ParrondoGridModel,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=100,
+        iterations=50,
         max_steps=500,
         model_reporters={
             "Gini index" : indicators.gini_index,
@@ -153,14 +145,16 @@ batch_run = mb.BatchRunner(
             }
         )
 
+print("[INFO] Executing", len(variable_params["N"])*len(variable_params["default_policy"])*batch_run.iterations, "iterations.", flush=True)
 batch_run.run_all()
 
-#%%
+#%% results form the batch execution
+
 run_data = batch_run.get_model_vars_dataframe()
 run_data.head()
 
 fig = mpl.figure.Figure(figsize=(8,8))
-for i,curr_policy in enumerate(['A', 'B', 'uniform', 'AB']):#= 'A'
+for i,curr_policy in enumerate(['A', 'B', 'AB', 'uniform']):#= 'A'
 
     axs = fig.add_subplot(221+i)
     plot_desc = 'game sequence: '+curr_policy+', grid=(' + str(grid_width) +','+str(grid_height) +')'
@@ -180,6 +174,3 @@ fig.savefig("plots/"+ exp_desc +".pdf")
 
 #%%
 run_data.to_csv("data/"+exp_desc+".zip", index=False, compression=dict(method='zip', archive_name='data.csv'))
-
-
-
