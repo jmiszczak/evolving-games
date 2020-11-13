@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.figure as figure
 mpl.rc('text', usetex = True)
-mpl.rc('font', size = 14)
+mpl.rc('font', size = 10)
 
 import os
 os.chdir(os.path.dirname(__file__))

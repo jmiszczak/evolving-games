@@ -61,7 +61,7 @@ class MoneyGridModel(mesa.Model):
 
         # add data collector
         self.datacollector = md.DataCollector(
-            model_reporters = {"Gini": indicators.gini},
+            model_reporters = {"Gini": indicators.gini_index},
             agent_reporters = {"Wealth": "wealth"}
             )
 
