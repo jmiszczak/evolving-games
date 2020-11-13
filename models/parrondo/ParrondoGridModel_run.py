@@ -5,6 +5,7 @@
 import mesa.batchrunner as mb
 import numpy as np
 import networkx as nx
+# import uuid
 # import pandas as pd
 
 from IPython.core.display import display
@@ -26,6 +27,12 @@ sys.path.append("..")
 from ParrondoGraphModel import ParrondoGraphModel
 import indicators
 
+#%%
+
+##############################################################################
+############################# SINGLE EXECUTION ###############################
+##############################################################################
+
 #%% simulation parameters
 
 # initial capital
@@ -33,7 +40,7 @@ init_wealth = 100
 
 # bias in the Parronod scheme
 default_policy = 'A'
-default_eps = 0.01
+default_eps = 0.002
 
 # store data from num_runs
 num_runs = 1
@@ -139,14 +146,19 @@ grid_height = 10
 
 # graph used in the experiments
 graph = nx.generators.lattice.grid_2d_graph(grid_width,grid_height,periodic=True)
+
+graph_id = "w"+str(grid_width) + "_h"+str(grid_height)
+graph_file_path = os.path.dirname(__file__) + '/graphs/grid2d/' + graph_id + ".gz"
+nx.readwrite.write_gexf(graph, graph_file_path)
 nx.draw(graph)
+
 
 #%% batch execution of the simulations
 
 fixed_params = {
-        "G": graph,
         "init_wealth": init_wealth,
-        "default_eps": default_eps
+        "default_eps": default_eps,
+        "Gf": graph_file_path
         }
 
 variable_params = { 
@@ -158,8 +170,8 @@ batch_run = mb.BatchRunner(
         ParrondoGraphModel,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=1,
-        max_steps=10,
+        iterations=50,
+        max_steps=500,
         model_reporters={
             "Gini index" : indicators.gini_index
             }
