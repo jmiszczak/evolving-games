@@ -83,8 +83,8 @@ batch_run = mb.BatchRunnerMP(
         nr_processes = 8,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=1,
-        max_steps=1,
+        iterations=50,
+        max_steps=500,
         model_reporters={
             "Gini index" : indicators.gini_index
             }
