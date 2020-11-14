@@ -18,8 +18,9 @@ mpl.rc('font', size = 10)
 
 #%% local functions
 
+
 import os
-os.chdir(os.path.dirname(__file__))
+#os.chdir(os.path.dirname(__file__))
 
 import sys
 sys.path.append("..")
@@ -152,7 +153,7 @@ m_param = 10
 # graph used in the experiment
 ba_graph = nx.generators.barabasi_albert_graph(network_size, m_param)
 ba_graph_uuid = str(uuid.uuid4())
-ba_graph_file_path = os.path.dirname(__file__) + '/graphs/ba/' + ba_graph_uuid + ".gz"
+ba_graph_file_path = os.path.dirname(__file__) + './graphs/ba/' + ba_graph_uuid + ".gz"
 nx.readwrite.write_gexf(ba_graph, ba_graph_file_path)
 nx.draw(ba_graph) 
 
