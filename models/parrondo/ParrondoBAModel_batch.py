@@ -78,8 +78,9 @@ variable_params = {
         "default_policy" : ['A', 'B', 'AB', 'uniform']
         }
          
-batch_run = mb.BatchRunner(
+batch_run = mb.BatchRunnerMP(
         ParrondoGraphModel,
+        nr_processes = 8,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
         iterations=1,
