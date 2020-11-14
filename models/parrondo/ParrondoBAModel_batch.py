@@ -18,9 +18,16 @@ mpl.rc('font', size = 10)
 
 #%% local functions
 
+script_path = ""
 
 import os
-os.chdir(os.path.dirname(__file__))
+try:
+    script_path = os.path.dirname(__file__)
+    os.chdir(script_path)
+except FileNotFoundError:
+    script_path = os.getcwd()
+else:
+    script_path = os.getcwd()
 
 import sys
 sys.path.append("..")
@@ -52,7 +59,7 @@ m_param = 10
 # graph used in the experiment
 ba_graph = nx.generators.barabasi_albert_graph(network_size, m_param)
 ba_graph_uuid = str(uuid.uuid4())
-ba_graph_file_path = os.path.dirname(__file__) + '/graphs/ba/' + ba_graph_uuid + ".gz"
+ba_graph_file_path = script_path + '/graphs/ba/' + ba_graph_uuid + ".gz"
 nx.readwrite.write_gexf(ba_graph, ba_graph_file_path)
 nx.draw(ba_graph) 
 
@@ -67,7 +74,7 @@ fixed_params = {
         }
 
 variable_params = { 
-        "num_agents" : range(10, 151, 10),
+        "num_agents" : range(10, 101, 10),
         "default_policy" : ['A', 'B', 'AB', 'uniform']
         }
          
@@ -75,8 +82,8 @@ batch_run = mb.BatchRunner(
         ParrondoGraphModel,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=50,
-        max_steps=500,
+        iterations=1,
+        max_steps=1,
         model_reporters={
             "Gini index" : indicators.gini_index
             }
@@ -97,7 +104,7 @@ run_data.to_csv("data/"+exp_desc+".zip", index=False, compression=dict(method='z
 # run_data = pd.read_csv(os.path.dirname(__file__) + "/data/"+exp_desc+".zip")
 
 fig = mpl.figure.Figure(figsize=(8,8))
-for i,curr_policy in enumerate(['A', 'B', 'AABB', 'uniform']):
+for i,curr_policy in enumerate(['A', 'B', 'AB', 'uniform']):
 
     axs = fig.add_subplot(221+i)
     plot_desc = 'game sequence: '+curr_policy+", graphBA("+str(network_size)+','+str(m_param)+')'

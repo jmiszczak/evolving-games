@@ -25,13 +25,9 @@ try:
     script_path = os.path.dirname(__file__)
     os.chdir(script_path)
 except FileNotFoundError:
-    print("A")
     script_path = os.getcwd()
 else:
     script_path = os.getcwd()
-
-
-print(script_path)
 
 import sys
 sys.path.append("..")
@@ -81,8 +77,8 @@ batch_run = mb.BatchRunner(
         ParrondoGraphModel,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=50,
-        max_steps=500,
+        iterations=1,
+        max_steps=1,
         model_reporters={
             "Gini index" : indicators.gini_index
             }
