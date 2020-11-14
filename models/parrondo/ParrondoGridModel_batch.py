@@ -21,9 +21,12 @@ mpl.rc('font', size = 10)
 script_path = ""
 
 import os
-if __file__  != "":
+try:
     script_path = os.path.dirname(__file__)
     os.chdir(script_path)
+except FileNotFoundError:
+    print("A")
+    script_path = os.getcwd()
 else:
     script_path = os.getcwd()
 
@@ -56,7 +59,7 @@ grid_height = 10
 graph = nx.generators.lattice.grid_2d_graph(grid_width,grid_height,periodic=True)
 
 graph_id = "w"+str(grid_width) + "_h"+str(grid_height)
-graph_file_path = os.path.dirname(__file__) + '/graphs/grid2d/' + graph_id + ".gz"
+graph_file_path = script_path + '/graphs/grid2d/' + graph_id + ".gz"
 nx.readwrite.write_gexf(graph, graph_file_path)
 nx.draw(graph)
 
@@ -70,7 +73,7 @@ fixed_params = {
         }
 
 variable_params = { 
-        "num_agents" : range(10, 151, 10),
+        "num_agents" : range(10, 101, 10),
         "default_policy" : ['A', 'B', 'AB', 'uniform']
         }
          
