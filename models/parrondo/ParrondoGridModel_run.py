@@ -5,13 +5,13 @@
 import mesa.batchrunner as mb
 import numpy as np
 import networkx as nx
-# import uuid
-# import pandas as pd
+import uuid
+import pandas as pd
 
 from IPython.core.display import display
 
 import matplotlib as mpl
-# import matplotlib.figure as figure
+import matplotlib.figure as figure
 mpl.rc('text', usetex = True)
 mpl.rc('font', size = 10)
 
@@ -107,25 +107,25 @@ median_wealth_data.plot(title='Median wealth, ' + plot_desc, ylim=(0,200))
 print(median_wealth_data.describe())
 
 #%%
-# fig = figure.Figure(figsize=(8,6))
-# axs = fig.add_subplot()
-# axs.hist(wealth_data, density=True, histtype='step', bins=int(num_runs/2))
-# axs.set_xlabel('Wealth')
-# display(fig)
+fig = figure.Figure(figsize=(8,6))
+axs = fig.add_subplot()
+axs.hist(wealth_data, density=True, histtype='step', bins=int(num_runs/2))
+axs.set_xlabel('Wealth')
+display(fig)
 
 #%%
-# for cell in model.grid.coord_iter():
-#     cell_content, x, y = cell
-#     agent_counts[x][y] = len(cell_content)    
+for cell in model.grid.coord_iter():
+    cell_content, x, y = cell
+    agent_counts[x][y] = len(cell_content)    
 
-# fig = mpl.figure.Figure(figsize=(8,8))
-# axs = fig.add_subplot()
+fig = mpl.figure.Figure(figsize=(8,8))
+axs = fig.add_subplot()
 
-# axs.imshow(agent_counts, interpolation='none', cmap=mpl.cm.Greys)
-# norm = mpl.cm.colors.Normalize(vmin=agent_counts.min(), vmax=agent_counts.max())
-# fig.colorbar(mpl.cm.ScalarMappable(cmap=mpl.cm.Greys, norm=norm), ax=axs)
+axs.imshow(agent_counts, interpolation='none', cmap=mpl.cm.Greys)
+norm = mpl.cm.colors.Normalize(vmin=agent_counts.min(), vmax=agent_counts.max())
+fig.colorbar(mpl.cm.ScalarMappable(cmap=mpl.cm.Greys, norm=norm), ax=axs)
 
-# display(fig)
+display(fig)
 
 ##############################################################################
 ############################## BATCH EXECUTION ###############################
@@ -170,30 +170,31 @@ batch_run = mb.BatchRunner(
         ParrondoGraphModel,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=50,
-        max_steps=500,
+        iterations=1,
+        max_steps=100,
         model_reporters={
             "Gini index" : indicators.gini_index
             }
         )
 
+exp_desc = "grid_"+str(grid_width)+'x'+str(grid_height)+"_"+str(batch_run.iterations)+"runs_"+str(batch_run.max_steps)+"steps"
+
+
+#%% run the experiment
 print("[INFO] Executing", len(variable_params["N"])*len(variable_params["default_policy"])*batch_run.iterations, "iterations.", flush=True)
 batch_run.run_all()
 
 #%% results form the batch execution
-
-exp_desc = "grid_"+str(grid_width)+'x'+str(grid_height)+"_"+str(batch_run.iterations)+"runs_"+str(batch_run.max_steps)+"steps"
-
 run_data = batch_run.get_model_vars_dataframe()
 run_data.head()
 
 run_data.to_csv("data/"+exp_desc+".zip", index=False, compression=dict(method='zip', archive_name='data.csv'))
 
 #%%
-#run_data = pd.read_csv("data/"+exp_desc+".zip")
+# run_data = pd.read_csv(os.path.dirname(__file__) + "/data/"+exp_desc+".zip")
 
 fig = mpl.figure.Figure(figsize=(8,8))
-for i,curr_policy in enumerate(['A', 'B', 'AB', 'uniform']):#= 'A'
+for i,curr_policy in enumerate(['A', 'B', 'AB', 'uniform']):
 
     axs = fig.add_subplot(221+i)
     plot_desc = 'game sequence: '+curr_policy+', grid=(' + str(grid_width) +','+str(grid_height) +')'
