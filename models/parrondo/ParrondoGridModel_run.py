@@ -19,7 +19,7 @@ mpl.rc('font', size = 10)
 #%% local functions
 
 import os
-os.chdir(os.path.dirname(__file__))
+#os.chdir(os.path.dirname(__file__))
 
 import sys
 sys.path.append("..")
@@ -148,7 +148,7 @@ grid_height = 10
 graph = nx.generators.lattice.grid_2d_graph(grid_width,grid_height,periodic=True)
 
 graph_id = "w"+str(grid_width) + "_h"+str(grid_height)
-graph_file_path = os.path.dirname(__file__) + '/graphs/grid2d/' + graph_id + ".gz"
+graph_file_path = os.path.dirname(__file__) + './graphs/grid2d/' + graph_id + ".gz"
 nx.readwrite.write_gexf(graph, graph_file_path)
 nx.draw(graph)
 
