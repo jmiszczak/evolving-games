@@ -101,16 +101,20 @@ run_data =  batch_run.get_model_vars_dataframe()
 run_data.rename(columns = {'default_policy': 'N', 'num_agents': 'default_policy'}, inplace =  True)
 run_data.to_csv("data/"+exp_desc+".zip", index=False, compression=dict(method='zip', archive_name='data.csv'))
 
-#%%
-# run_data = pd.read_csv(os.path.dirname(__file__) + "/data/"+exp_desc+".zip")
+#%% read data from file
+run_data = pd.read_csv(script_path + "/data/"+exp_desc+".zip")
+run_data.rename(columns = {'default_policy': 'N', 'N': 'default_policy'}, inplace =  True)
+gini_data = np.loadtxt(script_path+"/data/gini_index_values.dat")
 
+#%% plot data
 fig = mpl.figure.Figure(figsize=(8,8))
 for i,curr_policy in enumerate(['A', 'B', 'AB', 'uniform']):
 
     axs = fig.add_subplot(221+i)
     plot_desc = 'game sequence: '+curr_policy+", graphBA("+str(network_size)+','+str(m_param)+')'
-    axs.grid()
+    axs.grid(alpha=0.5,ls='--')
     axs.scatter(run_data[(run_data.default_policy==curr_policy)].N,run_data[(run_data.default_policy==curr_policy)]['Gini index'],marker='x')
+    axs.plot(gini_data,"k:")
     #axs.set_xlabel('Number of agents')
     axs.set_xlim((9,101))
     axs.set_ylim((-0.01,1))
