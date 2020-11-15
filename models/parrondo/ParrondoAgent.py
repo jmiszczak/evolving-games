@@ -16,7 +16,7 @@ class ParrondoAgent(mesa.Agent):
     """
     def __init__(self, unique_id, model, position, policy, eps):
         super().__init__(unique_id, model)
-        self.wealth = 2+unique_id
+        self.wealth = model.agent_init_wealth+unique_id
         self.position = position
         self.eps = eps
         self.m = 3
@@ -116,7 +116,7 @@ class ParrondoAgent(mesa.Agent):
                 # might be of zero-sum or not
                 
                 # self.wealth += gain
-                # other.wealth -= gain
+                # self.wealth -= gain
                 
             else:
                 pass
