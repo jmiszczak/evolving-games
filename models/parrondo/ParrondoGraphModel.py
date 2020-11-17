@@ -15,7 +15,7 @@ from ParrondoAgent import ParrondoAgent
 
 class ParrondoGraphModel(mesa.Model):
     
-    def __init__(self, num_agents, graph_spec, init_wealth, default_policy, default_eps):
+    def __init__(self, num_agents, graph_spec, init_wealth, default_policy, default_eps, default_boost):
         self.num_agents = num_agents
         self.agent_init_wealth = init_wealth
         self.running = True
@@ -31,7 +31,7 @@ class ParrondoGraphModel(mesa.Model):
             # select a graph node
             position = list(self.graph.G.nodes)[rnd.choice(range(len(list(self.graph.G.nodes))))]
             # create an agent
-            agent = ParrondoAgent(aid, self, position, default_policy, default_eps)
+            agent = ParrondoAgent(aid, self, position, default_policy, default_eps, default_boost)
             # add it to the scheduler
             self.schedule.add(agent)
             # assign it to a location

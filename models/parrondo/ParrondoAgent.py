@@ -14,7 +14,7 @@ class ParrondoAgent(mesa.Agent):
     Each agent stores the history of played games. This can be used to include
     new deterministic policies for choosing games. 
     """
-    def __init__(self, unique_id, model, position, policy, eps):
+    def __init__(self, unique_id, model, position, policy, eps, boost):
         super().__init__(unique_id, model)
         self.wealth = model.agent_init_wealth+unique_id
         self.position = position
@@ -22,6 +22,17 @@ class ParrondoAgent(mesa.Agent):
         self.m = 3
         self.policy = policy
         self.game_hist = ['A', 'A', 'B', 'B']
+
+        if boost == 'matthew' :
+            self.boost_policy = [-1, -1]
+        elif boost == 'antimatthew' :
+            self.boost_policy = [1, 1]
+        elif boost == 'strongmatthew' :
+            self.boost_policy = [-1, -2]
+        elif boost == 'strongantimatthew' :
+            self.boost_policy = [2, 1]
+        else :
+            self.boost_policy = [1, 1]
         
         
     # single step of the evolution
@@ -48,7 +59,7 @@ class ParrondoAgent(mesa.Agent):
         if len(cell_mates) > 0 :
             other = self.random.choice(cell_mates)
         
-            if other.wealth > 2:
+            if other.wealth > 0:
                 # policy for choosing the game
                 if self.policy == 'biasedB':
                     game = rnd.choice(['A', 'B'], p=[0.25, 0.75]) #  non-uniform random policy with preferred B
@@ -100,13 +111,13 @@ class ParrondoAgent(mesa.Agent):
                 
                 # winning means that the effect is reduced
                 if gain == 1:
-                    self.wealth -= np.sign(self.wealth - other.wealth)
-                    other.wealth += np.sign(self.wealth - other.wealth)
+                    self.wealth -= np.sign(self.wealth - other.wealth)*self.boost_policy[0]
+                    other.wealth += np.sign(self.wealth - other.wealth)*self.boost_policy[0]
                         
                 # loosing means that the effect is boosted
                 elif gain == -1:
-                    self.wealth += np.sign(self.wealth - other.wealth)
-                    other.wealth -= np.sign(self.wealth - other.wealth)
+                    self.wealth += np.sign(self.wealth - other.wealth)*self.boost_policy[1]
+                    other.wealth -= np.sign(self.wealth - other.wealth)*self.boost_policy[1]
                
                 else:
                     pass

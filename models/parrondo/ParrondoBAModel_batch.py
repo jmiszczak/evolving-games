@@ -61,7 +61,7 @@ ba_graph = nx.generators.barabasi_albert_graph(network_size, m_param)
 ba_graph_uuid = str(uuid.uuid4())
 ba_graph_file_path = script_path + '/graphs/ba/' + ba_graph_uuid + ".gz"
 nx.readwrite.write_gexf(ba_graph, ba_graph_file_path)
-nx.draw(ba_graph) 
+# nx.draw(ba_graph) 
 
 
 #%% batch execution of the simulations
@@ -70,7 +70,8 @@ nx.draw(ba_graph)
 fixed_params = {
         "graph_spec": ba_graph_file_path,
         "init_wealth": init_wealth,
-        "default_eps": default_eps
+        "default_eps": default_eps,
+        "default_boost" : "strongmatthew"
         }
 
 variable_params = { 
@@ -83,8 +84,8 @@ batch_run = mb.BatchRunnerMP(
         nr_processes = 8,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=50,
-        max_steps=500,
+        iterations=5,
+        max_steps=200,
         model_reporters={
             "Gini index" : indicators.gini_index
             }
@@ -103,7 +104,7 @@ run_data.to_csv("data/"+exp_desc+".zip", index=False, compression=dict(method='z
 
 #%% read data from file
 run_data = pd.read_csv(script_path + "/data/"+exp_desc+".zip")
-run_data.rename(columns = {'default_policy': 'N', 'N': 'default_policy'}, inplace =  True)
+#run_data.rename(columns = {'default_policy': 'N', 'N': 'default_policy'}, inplace =  True)
 gini_data = np.loadtxt(script_path+"/data/gini_index_values.dat")
 
 #%% plot data
@@ -113,7 +114,7 @@ for i,curr_policy in enumerate(['A', 'B', 'AB', 'uniform']):
     axs = fig.add_subplot(221+i)
     plot_desc = 'game sequence: '+curr_policy+", graphBA("+str(network_size)+','+str(m_param)+')'
     axs.grid(alpha=0.5,ls='--')
-    axs.scatter(run_data[(run_data.default_policy==curr_policy)].N,run_data[(run_data.default_policy==curr_policy)]['Gini index'],marker='x')
+    axs.scatter(run_data[(run_data.default_policy==curr_policy)].N,run_data[(run_data.default_policy==curr_policy)]['Gini index'],marker='x',color='r')
     axs.plot(gini_data,"k:")
     #axs.set_xlabel('Number of agents')
     axs.set_xlim((9,101))
