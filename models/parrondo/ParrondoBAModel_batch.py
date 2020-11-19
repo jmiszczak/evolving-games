@@ -84,8 +84,8 @@ batch_run = mb.BatchRunnerMP(
         nr_processes = 8,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=50,
-        max_steps=1000,
+        iterations=10,
+        max_steps=500,
         model_reporters={
             "Gini index" : indicators.gini_index
             }
@@ -117,7 +117,7 @@ for i,curr_policy in enumerate(['A', 'B', 'AB', 'uniform']):
     
     axs.scatter(run_data[(run_data.default_policy==curr_policy) & (run_data.default_boost == 'matthew')].num_agents, 
                 run_data[(run_data.default_policy==curr_policy) & (run_data.default_boost == 'matthew')]['Gini index'],
-                marker='x',color='r')
+                marker='x',color='r',s=1)
     
     axs.scatter(run_data[(run_data.default_policy==curr_policy) & (run_data.default_boost == 'strongmatthew')].num_agents, 
                 run_data[(run_data.default_policy==curr_policy) & (run_data.default_boost == 'strongmatthew')]['Gini index'],
