@@ -113,12 +113,12 @@ for i,curr_policy in enumerate(['A', 'B', 'AB', 'uniform']):
     
     axs.scatter(run_data[(run_data.default_policy==curr_policy) & (run_data.default_boost == 'matthew')].num_agents, 
                 run_data[(run_data.default_policy==curr_policy) & (run_data.default_boost == 'matthew')]['Gini index'],
-                marker='s',color='r', s=24, label="pro-Matthew")
+                marker='o',color='r', s=24, label="pro-Matthew")
     
     
     axs.scatter(run_data[(run_data.default_policy==curr_policy) & (run_data.default_boost == 'antimatthew')].num_agents, 
                 run_data[(run_data.default_policy==curr_policy) & (run_data.default_boost == 'antimatthew')]['Gini index'],
-                marker='^',color='k', s=24, label="anti-Matthew")
+                marker='*',color='k', s=24, label="anti-Matthew")
     
     axs.scatter(run_data[(run_data.default_policy==curr_policy) & (run_data.default_boost == 'strongmatthew')].num_agents, 
                 run_data[(run_data.default_policy==curr_policy) & (run_data.default_boost == 'strongmatthew')]['Gini index'],
@@ -131,7 +131,7 @@ for i,curr_policy in enumerate(['A', 'B', 'AB', 'uniform']):
     
     axs.plot(gini_data,"k:")
     #axs.set_xlabel('Number of agents')
-    axs.set_xlim((-5,106))
+    axs.set_xlim((2,97))
     axs.set_ylim((0.0,1))
     # axs.set_ylabel('Gini index')
     axs.legend(ncol=1, columnspacing=0, labelspacing=0.5)
