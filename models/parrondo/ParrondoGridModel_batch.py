@@ -70,7 +70,7 @@ fixed_params = {
         }
 
 variable_params = { 
-        "num_agents" : range(10, 101, 20),
+        "num_agents" : range(20, 121, 20),
         "default_policy" : ['A', 'B', 'AB', 'uniform'],
         "default_boost" : ["matthew", "antimatthew", "strongmatthew" ,"strongantimatthew"]
         }
@@ -131,7 +131,7 @@ for i,curr_policy in enumerate(['A', 'B', 'AB', 'uniform']):
     
     axs.plot(gini_data,"k:")
     #axs.set_xlabel('Number of agents')
-    axs.set_xlim((2,97))
+    axs.set_xlim((2,137))
     axs.set_ylim((0.0,1))
     # axs.set_ylabel('Gini index')
     axs.legend(ncol=1, columnspacing=0, labelspacing=0.5)
