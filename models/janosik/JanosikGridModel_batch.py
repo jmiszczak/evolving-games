@@ -71,7 +71,6 @@ fixed_params = {
 
 variable_params = { 
         "num_agents" : range(20, 121, 20),
-        "default_policy" : ['A', 'B', 'AB', 'uniform'],
         "default_boost" : ["matthew", "antimatthew", "strongmatthew" ,"strongantimatthew"]
         }
          
@@ -80,8 +79,8 @@ batch_run = mb.BatchRunnerMP(
         nr_processes = 8,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=20,
-        max_steps=500,
+        iterations=50,
+        max_steps=1000,
         model_reporters={
             "Gini index" : indicators.gini_index
             }
@@ -89,12 +88,12 @@ batch_run = mb.BatchRunnerMP(
 
 exp_desc = 'janosik_'+"grid_"+str(grid_width)+'x'+str(grid_height)+"_"+str(batch_run.iterations)+"runs_"+str(batch_run.max_steps)+"steps_" + str(default_eps)
 #%% run the experiment
-print("[INFO] Executing", len(variable_params["num_agents"])*len(variable_params["default_policy"])*len(variable_params["default_boost"])*batch_run.iterations, "iterations.", flush=True)
+print("[INFO] Executing", len(variable_params["num_agents"])*len(variable_params["default_boost"])*batch_run.iterations, "iterations.", flush=True)
 batch_run.run_all()
 
 #%% results form the batch execution
 run_data =  batch_run.get_model_vars_dataframe()
 # workaround for the Mesa bug
-run_data.columns = ['num_agents', 'default_policy', 'default_boost', 'Run', 'Gini index', 'graph_spec', 'init_wealth', 'default_eps']
+run_data.columns = ['num_agents', 'default_boost', 'Run', 'Gini index', 'graph_spec', 'init_wealth', 'default_eps']
 
 run_data.to_csv("data/"+exp_desc+".zip", index=False, compression=dict(method='zip', archive_name='data.csv'))
