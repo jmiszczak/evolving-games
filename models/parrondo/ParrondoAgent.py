@@ -59,7 +59,7 @@ class ParrondoAgent(mesa.Agent):
         if len(cell_mates) > 0 :
             other = self.random.choice(cell_mates)
         
-            if other.wealth > 0:
+            if other.wealth > 1:
                 # policy for choosing the game
                 if self.policy == 'biasedB':
                     game = rnd.choice(['A', 'B'], p=[0.25, 0.75]) #  non-uniform random policy with preferred B

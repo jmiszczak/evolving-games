@@ -54,23 +54,24 @@ class JanosikAgent(mesa.Agent):
         # play against random opponent from the current cell
         cell_mates = self.model.graph.get_cell_list_contents([self.pos])
         
-        if len(cell_mates) > 1 :
+        if len(cell_mates) > 0 :
             other = self.random.choice(cell_mates)
- 
-            gain = rnd.choice([1,-1], p=[0.5-self.eps, 0.5+self.eps])               
             
-            # interpret the gain in terms of the inequality reduction
-            # this simulates the Matthew effect
-            
-            # winning means that the effect is reduced
-            if gain == 1:
-                self.wealth -= np.sign(self.wealth - other.wealth)*self.boost_policy[0]
-                other.wealth += np.sign(self.wealth - other.wealth)*self.boost_policy[0]
-                    
-            # loosing means that the effect is boosted
-            elif gain == -1:
-                self.wealth += np.sign(self.wealth - other.wealth)*self.boost_policy[1]
-                other.wealth -= np.sign(self.wealth - other.wealth)*self.boost_policy[1]
-           
+            if other.wealth > 1:
+                gain = rnd.choice([1,-1], p=[0.5-self.eps, 0.5+self.eps])               
+                
+                # interpret the gain in terms of the inequality reduction
+                # this simulates the Matthew effect
+                
+                # winning means that the effect is reduced
+                if gain == 1:
+                    self.wealth -= np.sign(self.wealth - other.wealth)*self.boost_policy[0]
+                    other.wealth += np.sign(self.wealth - other.wealth)*self.boost_policy[0]
+                        
+                # loosing means that the effect is boosted
+                elif gain == -1:
+                    self.wealth += np.sign(self.wealth - other.wealth)*self.boost_policy[1]
+                    other.wealth -= np.sign(self.wealth - other.wealth)*self.boost_policy[1]
+               
                 
             
