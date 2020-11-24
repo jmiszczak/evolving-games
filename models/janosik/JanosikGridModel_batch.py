@@ -13,7 +13,7 @@ from IPython.core.display import display
 import matplotlib as mpl
 import matplotlib.figure as figure
 mpl.rc('text', usetex = True)
-mpl.rc('font', size = 10)
+mpl.rc('font', size = 12)
 
 
 #%% local functions
@@ -157,7 +157,7 @@ for i,curr_eps in enumerate(eps_vals ):
         axs.set_title(plot_desc)
 
 handles, labels = axs.get_legend_handles_labels()
-fig.legend(handles, labels, loc='lower center', ncol=4)
+fig.legend(handles, labels, loc='best', ncol=4)
 
 display(fig)
 
