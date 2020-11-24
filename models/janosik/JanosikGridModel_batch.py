@@ -80,8 +80,8 @@ batch_run = mb.BatchRunnerMP(
         nr_processes = 8,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=4,
-        max_steps=50,
+        iterations=50,
+        max_steps=500,
         model_reporters={
             "Gini index" : indicators.gini_index
             }
@@ -157,7 +157,7 @@ for i,curr_eps in enumerate(eps_vals ):
         axs.set_title(plot_desc)
 
 handles, labels = axs.get_legend_handles_labels()
-fig.legend(handles, labels, loc='best', ncol=4)
+fig.legend(handles, labels, loc='lower center', bbox_to_anchor=(0.5,-0.02), ncol=4)
 
 display(fig)
 
