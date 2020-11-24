@@ -37,7 +37,7 @@ class JanosikAgent(mesa.Agent):
     def step(self):
         """Execute one step"""
         self.move()
-        if self.wealth > 0:
+        if self.wealth > 1:
             self.play()
 
 
@@ -54,7 +54,7 @@ class JanosikAgent(mesa.Agent):
         # play against random opponent from the current cell
         cell_mates = self.model.graph.get_cell_list_contents([self.pos])
         
-        if len(cell_mates) > 0 :
+        if len(cell_mates) > 1 :
             other = self.random.choice(cell_mates)
  
             gain = rnd.choice([1,-1], p=[0.5-self.eps, 0.5+self.eps])               
