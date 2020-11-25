@@ -6,12 +6,12 @@ import numpy.random as rnd
 class JanosikAgent(mesa.Agent):
     """
     Implementation of an agent with initial amount of money and the policy for
-    reduction the ineqaulity in the capital distribution. 
+    reduction the inequality in the capital distribution. 
 
-    The game played by the agen has only one parameter, which is interpreter
+    The game played by the agent has only one parameter, which is interpreter
     as a bias toward wining.
     
-    The boost is used to change the strength of the interpreteation according 
+    The boost is used to change the strength of the interpretation according 
     the Matthew effect.
 
     """
