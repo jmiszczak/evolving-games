@@ -34,17 +34,27 @@ class JanosikAgent(mesa.Agent):
         
     # single step of the evolution
     def step(self):
-        """Execute one step"""
-        self.move()
-        if self.capital > 1:
+        """
+        Execute one step. 
+        First, play if your capital is 2 or more. 
+        Next, move to a new location.
+        """
+        
+        if self.capital > 1 :
             self.play()
+        
+        self.move()
 
 
     # movement of the agent
     def move(self):
+        """
+        Select new location from neighboring nodes.
+        """
         possible_steps = self.model.graph.get_neighbors(self.position)
         self.position = self.random.choice(possible_steps)
         self.model.graph.move_agent(self, self.position)
+
 
     # implementation of a single step
     def play(self):
@@ -61,21 +71,22 @@ class JanosikAgent(mesa.Agent):
         if len(cell_mates) > 0 :
             other = self.random.choice(cell_mates)
             
-            if other.capital > 1:
+            if other.capital > 1 :
                 gain = rnd.choice([1,-1], p=[0.5-self.eps, 0.5+self.eps])               
                 
                 # interpret the gain in terms of the inequality reduction
                 # this simulates the Matthew effect
                 
                 # winning means that the effect is reduced
+                janosik_value = np.sign(self.capital - other.capital)
                 if gain == 1:
-                    self.capital -= np.sign(self.capital - other.capital)*self.boost_policy[0]
-                    other.capital += np.sign(self.capital - other.capital)*self.boost_policy[0]
+                    self.capital -= janosik_value*self.boost_policy[0]
+                    other.capital += janosik_value*self.boost_policy[0]
                         
                 # loosing means that the effect is boosted
                 elif gain == -1:
-                    self.capital += np.sign(self.capital - other.capital)*self.boost_policy[1]
-                    other.capital -= np.sign(self.capital - other.capital)*self.boost_policy[1]
+                    self.capital += janosik_value*self.boost_policy[1]
+                    other.capital -= janosik_value*self.boost_policy[1]
                
                 
             
