@@ -42,7 +42,7 @@ import indicators
 #%% simulation parameters for batch execution
 
 # initial capital
-init_wealth = 2
+init_capital = 2
 
 # bias in the game
 default_eps = 0.15
@@ -66,7 +66,7 @@ eps_vals =  [0.0, 0.025, 0.05, 0.10, 0.125, 0.15, 0.25, 0.3, 0.5]
 
 fixed_params = {
         "graph_spec": graph_file_path,
-        "init_wealth": init_wealth
+        "init_capital": init_capital
         }
 
 variable_params = { 
@@ -80,10 +80,15 @@ batch_run = mb.BatchRunnerMP(
         nr_processes = 8,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=50,
-        max_steps=500,
+        iterations=5,
+        max_steps=5,
         model_reporters={
-            "Gini index" : indicators.gini_index
+            "Gini index" : indicators.gini_index,
+            "Total capital": indicators.total_capital, 
+            "Mean capital": indicators.mean_capital,
+            "Median capital": indicators.median_capital,
+            "Min capital": indicators.min_capital,
+            "Max capital": indicators.max_capital 
             }
         )
 

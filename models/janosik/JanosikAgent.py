@@ -6,18 +6,17 @@ import numpy.random as rnd
 class JanosikAgent(mesa.Agent):
     """
     Implementation of an agent with initial amount of money and the policy for
-    reduction the inequality in the capital distribution. 
+    reduction the ineqaulity in the capital distribution. 
 
-    The game played by the agent has only one parameter, which is interpreter
+    The game played by the agen has only one parameter, which is interpreter
     as a bias toward wining.
     
-    The boost is used to change the strength of the interpretation according 
+    The boost is used to change the strength of the interpreteation according 
     the Matthew effect.
-
     """
     def __init__(self, unique_id, model, position, eps, boost):
         super().__init__(unique_id, model)
-        self.wealth = model.agent_init_wealth+unique_id
+        self.capital = model.agent_init_capital+unique_id
         self.position = position
         self.eps = eps
 
@@ -37,7 +36,7 @@ class JanosikAgent(mesa.Agent):
     def step(self):
         """Execute one step"""
         self.move()
-        if self.wealth > 1:
+        if self.capital > 1:
             self.play()
 
 
@@ -47,8 +46,13 @@ class JanosikAgent(mesa.Agent):
         self.position = self.random.choice(possible_steps)
         self.model.graph.move_agent(self, self.position)
 
+    # implementation of a single step
     def play(self):
-        """Execute one step"""
+        """
+        Execute one step of the scheme. This consists of playing a biased coin
+        flip game with a randomly selected agent from the current cell, and 
+        modifying the capital of both players.
+        """
         gain = 0
         
         # play against random opponent from the current cell
@@ -57,7 +61,7 @@ class JanosikAgent(mesa.Agent):
         if len(cell_mates) > 0 :
             other = self.random.choice(cell_mates)
             
-            if other.wealth > 1:
+            if other.capital > 1:
                 gain = rnd.choice([1,-1], p=[0.5-self.eps, 0.5+self.eps])               
                 
                 # interpret the gain in terms of the inequality reduction
@@ -65,13 +69,13 @@ class JanosikAgent(mesa.Agent):
                 
                 # winning means that the effect is reduced
                 if gain == 1:
-                    self.wealth -= np.sign(self.wealth - other.wealth)*self.boost_policy[0]
-                    other.wealth += np.sign(self.wealth - other.wealth)*self.boost_policy[0]
+                    self.capital -= np.sign(self.capital - other.capital)*self.boost_policy[0]
+                    other.capital += np.sign(self.capital - other.capital)*self.boost_policy[0]
                         
                 # loosing means that the effect is boosted
                 elif gain == -1:
-                    self.wealth += np.sign(self.wealth - other.wealth)*self.boost_policy[1]
-                    other.wealth -= np.sign(self.wealth - other.wealth)*self.boost_policy[1]
+                    self.capital += np.sign(self.capital - other.capital)*self.boost_policy[1]
+                    other.capital -= np.sign(self.capital - other.capital)*self.boost_policy[1]
                
                 
             

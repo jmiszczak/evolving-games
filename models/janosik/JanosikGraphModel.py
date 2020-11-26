@@ -14,16 +14,24 @@ import indicators
 from JanosikAgent import JanosikAgent
 
 class JanosikGraphModel(mesa.Model):
+    """
+    Model of with the agent implementing inequality reduction policies. 
     
-    def __init__(self, num_agents, graph_spec, init_wealth, default_eps, default_boost):
+    Positions of the agnets are defined using NetworkX graph.
+    """
+    
+    def __init__(self, num_agents, graph_spec, init_capital, default_eps, default_boost):
         self.num_agents = num_agents
-        self.agent_init_wealth = init_wealth
+        self.agent_init_capital = init_capital
         self.running = True
         
+        # chech if the graph is given as a path or as NetworkX graph
         if type(graph_spec) == nx.classes.graph.Graph:
             self.graph = ms.NetworkGrid(graph_spec)
         elif type(graph_spec) == str:
             self.graph = ms.NetworkGrid(nx.readwrite.read_gexf(graph_spec))
+        
+        # use random activation policy
         self.schedule = mt.RandomActivation(self)
 
         # create and add agents 
@@ -40,11 +48,13 @@ class JanosikGraphModel(mesa.Model):
         # add data collector
         self.datacollector = md.DataCollector(
             model_reporters = {"Gini index": indicators.gini_index, 
-                               "Total wealth": indicators.total_wealth, 
-                               "Mean wealth": indicators.mean_wealth,
-                               "Median wealth": indicators.median_wealth,
+                               "Total capital": indicators.total_capital, 
+                               "Mean capital": indicators.mean_capital,
+                               "Median capital": indicators.median_capital,
+                               "Min capital": indicators.min_capital,
+                               "Max capital": indicators.max_capital 
                                },
-            agent_reporters = {"Wealth": "wealth"}
+            agent_reporters = {"Capital": "capital"}
             )
 
     def step(self):
