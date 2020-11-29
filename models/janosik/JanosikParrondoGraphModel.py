@@ -11,13 +11,13 @@ sys.path.append('..')
 
 import indicators
 
-from ParrondoAgent import ParrondoAgent
+from JanosikParrondoAgent import JanosikParrondoAgent
 
-class ParrondoGraphModel(mesa.Model):
+class JanosikParrondoGraphModel(mesa.Model):
     
-    def __init__(self, num_agents, graph_spec, init_wealth, default_policy, default_eps, default_boost):
+    def __init__(self, num_agents, graph_spec, init_capital, default_policy, default_eps, default_boost):
         self.num_agents = num_agents
-        self.agent_init_wealth = init_wealth
+        self.agent_init_capital = init_capital
         self.running = True
         
         if type(graph_spec) == nx.classes.graph.Graph:
@@ -31,7 +31,7 @@ class ParrondoGraphModel(mesa.Model):
             # select a graph node
             position = list(self.graph.G.nodes)[rnd.choice(range(len(list(self.graph.G.nodes))))]
             # create an agent
-            agent = ParrondoAgent(aid, self, position, default_policy, default_eps, default_boost)
+            agent = JanosikParrondoAgent(aid, self, position, default_policy, default_eps, default_boost)
             # add it to the scheduler
             self.schedule.add(agent)
             # assign it to a location
@@ -40,11 +40,13 @@ class ParrondoGraphModel(mesa.Model):
         # add data collector
         self.datacollector = md.DataCollector(
             model_reporters = {"Gini index": indicators.gini_index, 
-                               "Total wealth": indicators.total_wealth, 
-                               "Mean wealth": indicators.mean_wealth,
-                               "Median wealth": indicators.median_wealth,
+                               "Total capital": indicators.total_capital, 
+                               "Mean capital": indicators.mean_capital,
+                               "Median capital": indicators.median_capital,
+                               "Min capital": indicators.min_capital,
+                               "Max capital": indicators.max_capital 
                                },
-            agent_reporters = {"Wealth": "wealth"}
+            agent_reporters = {"Capital": "capital"}
             )
 
     def step(self):

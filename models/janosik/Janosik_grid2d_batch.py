@@ -98,7 +98,7 @@ batch_run = mb.BatchRunnerMP(
 exp_desc = 'janosik_'+"grid_"+str(grid_width)+'x'+str(grid_height)+"_"+str(batch_run.iterations)+"runs_"+str(batch_run.max_steps)+"steps"#"_" + str(default_eps)+"eps"
 
 #%% run the experiment
-print("[INFO] Executing", len(variable_params["num_agents"])*len(variable_params["default_boost"])*len(variable_params["default_eps"])*batch_run.iterations, "iterations.", flush=True)
+print("[INFO] Executing", np.prod(list(map(len,variable_params.values())))*batch_run.iterations, "iterations.", flush=True)
 batch_run.run_all()
 
 #%% results form the batch execution

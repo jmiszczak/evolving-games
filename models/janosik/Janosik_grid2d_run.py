@@ -36,16 +36,13 @@ from JanosikGraphModel import JanosikGraphModel
 import indicators
 
 ##############################################################################
-############################## BATCH EXECUTION ###############################
+############################## SINGLE EXECUTION ###############################
 ##############################################################################
 
 #%% simulation parameters for batch execution
 
 # initial capital
 init_capital = 10
-
-# bias in the game
-default_eps = 0.15
 
 # size of the grid
 grid_width = 10
