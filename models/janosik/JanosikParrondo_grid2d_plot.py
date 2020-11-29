@@ -14,7 +14,7 @@ import matplotlib as mpl
 import matplotlib.figure as figure
 import matplotlib.markers as markers
 mpl.rc('text', usetex = True)
-mpl.rc('font', size = 12)
+mpl.rc('font', size = 14)
 
 
 #%% local functions
@@ -63,7 +63,7 @@ agen_nums = range(20,141,20)
 
 #%% paramteres used during the simulations
 #
-iterations = 2
+iterations = 10
 max_steps = 300
 
 exp_desc = "janosik-parrondo_grid_"+str(grid_width)+'x'+str(grid_height)+"_"+str(iterations)+"runs_"+str(max_steps)+"steps"
@@ -80,8 +80,8 @@ plt_marker_size = {"matthew" : 5, "antimatthew": 5, "strongmatthew": 6, "stronga
 gini_min = {}
 gini_max = {}
 poly_app_deg = 2
-x_vals = range(20,141,20)
-x_vals_dense = range(20,141,10)
+x_vals = range(20,121,20)
+x_vals_dense = range(x_vals.start,x_vals.stop,x_vals.step//2)
 
 #%% load data
 
