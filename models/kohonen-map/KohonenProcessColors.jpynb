@@ -1,0 +1,181 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 114,
+   "id": "embedded-armor",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import time\n",
+    "import progressbar\n",
+    "\n",
+    "import numpy as np\n",
+    "import networkx as nx\n",
+    "import ipycytoscape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 115,
+   "id": "annual-storage",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "gid_size = 10\n",
+    "max_iter = 30\n",
+    "train_size = 300\n",
+    "kohonen_graph = nx.grid_2d_graph(gid_size, gid_size, periodic=True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 116,
+   "id": "mental-corrections",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# training classes\n",
+    "inDataRed = [[np.random.randint(0,255),0,0] for _ in range(train_size)]\n",
+    "inDataGreen = [[0,np.random.randint(0,255),0] for _ in range(train_size)]\n",
+    "inDataBlue = [[0,0,np.random.randint(0,255)] for _ in range(train_size)]\n",
+    "trainData = inDataRed + inDataGreen + inDataBlue\n",
+    "np.random.shuffle(trainData)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 117,
+   "id": "completed-triangle",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# initialize the graph wilth random colors\n",
+    "for n in kohonen_graph.nodes:\n",
+    "    kohonen_graph.nodes[n]['color_vector'] = np.random.randint(32,223,3).tolist()\n",
+    "#     kohonen_graph.nodes[n]['color_vector'] = np.random.randint(96,160,3).tolist()\n",
+    "    kohonen_graph.nodes[n]['color_hex'] = '#{:02x}{:02x}{:02x}'.format(*kohonen_graph.nodes[n]['color_vector'] )"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 118,
+   "id": "monetary-wrist",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "application/vnd.jupyter.widget-view+json": {
+       "model_id": "01c3f45355194b0c8f2ce0a81092e1d8",
+       "version_major": 2,
+       "version_minor": 0
+      },
+      "text/plain": [
+       "CytoscapeWidget(cytoscape_layout={'name': 'grid', 'rows': 10, 'cols': 10}, cytoscape_style=[{'selector': 'node…"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "cytoscapeobj = ipycytoscape.CytoscapeWidget()\n",
+    "cytoscapeobj.graph.add_graph_from_networkx(kohonen_graph)\n",
+    "\n",
+    "cytoscapeobj.set_layout(name='grid', rows=gid_size, cols=gid_size)\n",
+    "cytoscapeobj.set_style([{\n",
+    "    \"selector\":\"node\",\n",
+    "    \"style\":{\n",
+    "        \"width\": 20,\n",
+    "        \"height\": 20,\n",
+    "        \"opacity\": 1,\n",
+    "        \"background-color\": 'data(color_hex)',\n",
+    "        \"border-color\": 'black',\n",
+    "        \"border-width\": 0,\n",
+    "    }\n",
+    "},\n",
+    "{\n",
+    "  \"selector\":\"edge\",\n",
+    "  \"style\":{\n",
+    "      \"width\": 1,\n",
+    "      \"opacity\": 1\n",
+    "  }\n",
+    "}\n",
+    "])\n",
+    "cytoscapeobj.set_tooltip_source('color_hex')\n",
+    "cytoscapeobj.relayout()\n",
+    "display(cytoscapeobj)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 119,
+   "id": "center-rescue",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "100%                                                                           \n"
+     ]
+    }
+   ],
+   "source": [
+    "bar = progressbar.ProgressBar(widgets=[progressbar.Percentage()])\n",
+    "\n",
+    "for t in bar(range(max_iter)):\n",
+    "    for v in trainData:\n",
+    "\n",
+    "        # assum inf as initial guess\n",
+    "        best_diff = np.inf\n",
+    "\n",
+    "        # assume (0,0) as BMU\n",
+    "        best_node = (0,0)\n",
+    "\n",
+    "        # itarate over the network to find the best node\n",
+    "        for n in kohonen_graph.nodes:\n",
+    "            diff = np.linalg.norm(np.array(kohonen_graph.nodes[n]['color_vector']) - np.array(v), ord=None)\n",
+    "            if diff < best_diff:\n",
+    "                best_diff = diff\n",
+    "                best_node = n\n",
+    "                \n",
+    "        # iterate over the neighbors of the best node\n",
+    "        for ng in kohonen_graph.neighbors(best_node):\n",
+    "            current_vec = np.array(kohonen_graph.nodes[ng]['color_vector'])\n",
+    "            update_vec = (np.array(v)-current_vec)//(10+2*t)\n",
+    "            kohonen_graph.nodes[ng]['color_vector'] = (current_vec+update_vec).tolist()\n",
+    "            kohonen_graph.nodes[ng]['color_hex'] = '#{:02x}{:02x}{:02x}'.format(*kohonen_graph.nodes[ng]['color_vector'] )\n",
+    "#             print(\"Update\", update_vec)\n",
+    "#             print(\"Current\", current_vec)\n",
+    "    # update the visualization\n",
+    "    for n in cytoscapeobj.graph.nodes:\n",
+    "        n.data['color_vector'] = kohonen_graph.nodes[eval(n.data['id'])]['color_vector']\n",
+    "        n.data['color_hex'] = '#{:02x}{:02x}{:02x}'.format(*n.data['color_vector'] )\n",
+    "    \n",
+    "#     time.sleep(.05)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.2"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
