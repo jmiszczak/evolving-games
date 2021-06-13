@@ -13,6 +13,14 @@ def gini_index(model):
     return sum([abs(xi-xj) for xi in agents_capital for xj in agents_capital ]) /(2*model.num_agents*sum(agents_capital))
 
 
+def hoover_index(model):
+    agents_capital = sorted([agent.capital for agent in model.schedule.agents])
+    mean_capital = 1/len(model.num_agents)*sum(agents_capital)
+    
+    return (1/sum(agents_capital))*0.5*sum([abs(xi - mean_capital)) for xi in agents_capital])
+
+
+
 def total_capital(model):
     return sum([agent.capital for agent in model.schedule.agents])
 
