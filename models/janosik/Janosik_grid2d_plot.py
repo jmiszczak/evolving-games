@@ -51,8 +51,8 @@ grid_height = 10
 
 #%% paramteres used during the simulations
 #
-iterations = 20
-max_steps = 300
+iterations = 50
+max_steps = 500
 
 # values of the bias used in the experiments
 eps_vals =  [0.0]+list(-1*np.array([0.025, 0.05, 0.10, 0.125, 0.15, 0.25, 0.3, 0.5]))
@@ -99,10 +99,10 @@ for i,curr_eps in enumerate(eps_vals ):
         gini_min[b] = [rd[(rd.default_eps==curr_eps) & (rd.default_boost == b)][rd.num_agents==r]['Gini index'].min() for r in x_vals]
    
         axs.plot(x_vals, gini_max[b], plot_marker[b], fillstyle='none', ms=plt_marker_size[b], label=plot_label[b])
-        axs.plot(x_vals, np.polyval(np.polyfit(x_vals,gini_max[b],poly_app_deg),x_vals), plot_marker[b][0]+":", linewidth=1)
+        axs.plot(x_vals, np.polyval(np.polyfit(x_vals,gini_max[b],poly_app_deg),x_vals), plot_marker[b][0]+":", linewidth=.5)
     
         axs.plot(x_vals, gini_min[b], plot_marker[b],  fillstyle='none', ms=plt_marker_size[b] )
-        axs.plot(x_vals, np.polyval(np.polyfit(x_vals,gini_min[b],poly_app_deg),x_vals), plot_marker[b][0]+":", linewidth=1)
+        axs.plot(x_vals, np.polyval(np.polyfit(x_vals,gini_min[b],poly_app_deg),x_vals), plot_marker[b][0]+":", linewidth=.51)
    
         # axs.plot(gini_data)
         # axs.plot(x_vals_dense, gini_data[x_vals_dense],"k",linewidth=1, markersize=4)

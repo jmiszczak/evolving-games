@@ -82,10 +82,11 @@ batch_run = mb.BatchRunnerMP(
         nr_processes = 8,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=20,
+        iterations=10,
         max_steps=300,
         model_reporters={
             "Gini index" : indicators.gini_index,
+            "Hoover index" : indicators.hoover_index,
             "Total capital": indicators.total_capital, 
             "Mean capital": indicators.mean_capital,
             "Median capital": indicators.median_capital,
@@ -104,7 +105,7 @@ batch_run.run_all()
 #%% results form the batch execution
 rd =  batch_run.get_model_vars_dataframe()
 # workaround for the Mesa bug
-rd.columns = ['num_agents', 'default_boost', 'default_eps', 'Run', 'Gini index', 'Total capital', 'Mean capital', 'Median capital', 'Min capital', 'Max capital', 'graph_spec', 'init_wealth']
+rd.columns = ['num_agents', 'default_boost', 'default_eps', 'Run', 'Gini index', 'Hoover index', 'Total capital', 'Mean capital', 'Median capital', 'Min capital', 'Max capital', 'graph_spec', 'init_wealth']
 rd.to_csv("data/"+exp_desc+".zip", index=False, compression=dict(method='zip', archive_name='data.csv'))
 
 # %% plot Gini data
@@ -113,13 +114,17 @@ plot_marker = {"matthew" : "bx", "antimatthew" : "go", "strongmatthew": "r+", "s
 plt_marker_size = {"matthew" : 32}
 gini_min = {}
 gini_max = {}
+hoover_min = {}
+hoover_max = {}
+
 poly_app_deg = 2
 x_vals = range(20,141,20)
 x_vals_dense = range(20,141,10)
 gini_data = np.loadtxt(script_path+"/data/gini_index_values-constant.dat")
+hoover_data = np.loadtxt(script_path+"/data/hoover_index_values-constant.dat")
 
-#%% ploting
-fig = mpl.figure.Figure(figsize=(12,10))
+#%% ploting Gini index
+fig = mpl.figure.Figure(figsize=(10,8))
 for i,curr_eps in enumerate(eps_vals ):
 
     axs = fig.add_subplot(331+i)
@@ -149,12 +154,54 @@ for i,curr_eps in enumerate(eps_vals ):
         axs.set_title(plot_desc)
 
 handles, labels = axs.get_legend_handles_labels()
-fig.legend(handles, labels, loc='lower center', bbox_to_anchor=(0.5,-0.02), ncol=4)
+lgd = fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.525,1.05), ncol=4)
+
 
 display(fig)
 
 fig.tight_layout()
-fig.savefig("plots/"+ exp_desc +".pdf")
+fig.savefig("plots/"+ exp_desc +"_gini.pdf", bbox_extra_artists=(lgd,), bbox_inches='tight')
+fig.savefig("plots/png/"+ exp_desc +".png")
+
+
+#%% ploting Hoover index
+fig = mpl.figure.Figure(figsize=(10,8))
+for i,curr_eps in enumerate(eps_vals ):
+
+    axs = fig.add_subplot(331+i)
+    plot_desc = r'$\epsilon=$ '+str(curr_eps)#+r", grid("+str(grid_width)+'x'+str(grid_height)+')'
+    axs.grid(alpha=0.5,ls='--')
+    
+    axs.plot(x_vals_dense,hoover_data[x_vals_dense],'k-.')
+    
+    for b in ["matthew", "strongmatthew", "antimatthew", "strongantimatthew" ]:
+        hoover_max[b] = [rd[(rd.default_eps==curr_eps) & (rd.default_boost == b)][rd.num_agents==r]['Hoover index'].max() for r in x_vals]
+        hoover_min[b] = [rd[(rd.default_eps==curr_eps) & (rd.default_boost == b)][rd.num_agents==r]['Hoover index'].min() for r in x_vals]
+   
+    
+        axs.plot(x_vals, hoover_max[b], plot_marker[b], label=plot_label[b])
+        axs.plot(x_vals, np.polyval(np.polyfit(x_vals,hoover_max[b],poly_app_deg),x_vals), plot_marker[b][0]+":", linewidth=1)
+        
+        axs.plot(x_vals, hoover_min[b], plot_marker[b])
+        axs.plot(x_vals, np.polyval(np.polyfit(x_vals,hoover_min[b],poly_app_deg),x_vals), plot_marker[b][0]+":", linewidth=1)
+   
+        # axs.plot(hoover_data)
+        # axs.plot(x_vals_dense, hoover_data[x_vals_dense],"k",linewidth=1, markersize=4)
+        #axs.set_xlabel('Number of agents')
+        axs.set_xlim((2,x_vals[-1]+15))
+        axs.set_ylim((0.0,0.8))
+        # axs.set_ylabel('Hoover index')
+        # axs.legend(ncol=1, columnspacing=0, labelspacing=0.5)
+        axs.set_title(plot_desc)
+
+handles, labels = axs.get_legend_handles_labels()
+lgd = fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.525,1.05), ncol=4)
+
+
+display(fig)
+
+fig.tight_layout()
+fig.savefig("plots/"+ exp_desc + "_hoover.pdf", bbox_extra_artists=(lgd,), bbox_inches='tight')
 fig.savefig("plots/png/"+ exp_desc +".png")
 
 # %% plot capital data
