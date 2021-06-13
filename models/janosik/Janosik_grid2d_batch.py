@@ -79,19 +79,19 @@ variable_params = {
          
 batch_run = mb.BatchRunnerMP(
         JanosikGraphModel,
-        nr_processes = 10,
+        nr_processes = 6,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=50,
+        iterations=10,
         max_steps=100,
         model_reporters={
             "Gini index" : indicators.gini_index,
             "Hoover index" : indicators.hoover_index,
-            "Total capital": indicators.total_capital, 
-            "Mean capital": indicators.mean_capital,
-            "Median capital": indicators.median_capital,
-            "Min capital": indicators.min_capital,
-            "Max capital": indicators.max_capital 
+            # "Total capital": indicators.total_capital, 
+            # "Mean capital": indicators.mean_capital,
+            # "Median capital": indicators.median_capital,
+            # "Min capital": indicators.min_capital,
+            # "Max capital": indicators.max_capital 
             }
         )
 
@@ -104,8 +104,12 @@ batch_run.run_all()
 
 #%% results form the batch execution
 rd =  batch_run.get_model_vars_dataframe()
-# workaround for the Mesa bug
-rd.columns = ['num_agents', 'default_boost', 'default_eps', 'Run', 'Gini index', 'Hoover index', 'Total capital', 'Mean capital', 'Median capital', 'Min capital', 'Max capital', 'graph_spec', 'init_wealth']
+#%% workaround for the Mesa bug
+#rd.columns = ['num_agents', 'default_boost', 'default_eps', 'Run', 'Gini index', 'Hoover index', 'Total capital', 'Mean capital', 'Median capital', 'Min capital', 'Max capital', 'graph_spec', 'init_wealth']
+
+rd.columns = ['num_agents', 'default_boost', 'default_eps', 'Run', 'Gini index', 'Hoover index', 'graph_spec', 'init_wealth']
+
+# %% save data
 rd.to_csv("data/"+exp_desc+".zip", index=False, compression=dict(method='zip', archive_name='data.csv'))
 
 # %% plot Gini data

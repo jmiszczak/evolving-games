@@ -85,7 +85,9 @@ batch_run = mb.BatchRunnerMP(
         iterations=10,
         max_steps=300,
         model_reporters={
-            "Gini index" : indicators.gini_index
+            "Gini index" : indicators.gini_index,
+            "Hoover index" : indicators.hoover_index,
+
             }
         )
 
@@ -98,7 +100,7 @@ if __name__ == "__main__":
     #%% results form the batch execution
     rd =  batch_run.get_model_vars_dataframe()
     # workaround for the Mesa bug
-    rd.columns = ['num_agents', 'default_policy', 'default_eps', 'default_boost', 'Run', 'Gini index', 'graph_spec', 'init_wealth']
+    rd.columns = ['num_agents', 'default_policy', 'default_eps', 'default_boost', 'Run', 'Gini index', 'Hoover index', 'graph_spec', 'init_wealth']
     rd.to_csv("data/"+exp_desc+".zip", index=False, compression=dict(method='zip', archive_name='data.csv'))
     print("[INFO] Data saved to: " + "data/"+exp_desc+".zip")
 

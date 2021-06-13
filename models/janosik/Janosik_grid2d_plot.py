@@ -52,7 +52,7 @@ grid_height = 10
 #%% paramteres used during the simulations
 #
 iterations = 50
-max_steps = 500
+max_steps = 100
 
 # values of the bias used in the experiments
 eps_vals =  [0.0]+list(-1*np.array([0.025, 0.05, 0.10, 0.125, 0.15, 0.25, 0.3, 0.5]))
@@ -83,7 +83,7 @@ rd = pd.read_csv(script_path + "/data/"+exp_desc+".zip")
 # initial values of Gini
 gini_data = np.loadtxt(script_path+"/data/gini_index_values-constant.dat")
 
-#%% ploting
+#%% ploting Gini data
 
 fig = mpl.figure.Figure(figsize=(6.5,4.875))
 for i,curr_eps in enumerate(eps_vals ):
@@ -132,5 +132,57 @@ lgd = fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.525,1.05
 display(fig)
 
 fig.tight_layout()
-fig.savefig("plots/"+ exp_desc +".pdf", bbox_extra_artists=(lgd,), bbox_inches='tight')
+fig.savefig("plots/"+ exp_desc +"_gini.pdf", bbox_extra_artists=(lgd,), bbox_inches='tight')
+fig.savefig("plots/png/"+ exp_desc +".png")
+
+#%% ploting Hoover data
+
+fig = mpl.figure.Figure(figsize=(6.5,4.875))
+for i,curr_eps in enumerate(eps_vals ):
+
+    axs = fig.add_subplot(331+i)
+    plot_desc = r'$\epsilon=$ '+str(curr_eps)#+r", grid("+str(grid_width)+'x'+str(grid_height)+')'
+    axs.grid(alpha=0.75,ls=':')
+    
+    axs.plot(x_vals_dense,hoover_data[x_vals_dense],'k-.')
+    
+    for b in ["matthew", "strongmatthew", "antimatthew", "strongantimatthew" ]:
+        hoover_max[b] = [rd[(rd.default_eps==curr_eps) & (rd.default_boost == b)][rd.num_agents==r]['Hoover index'].max() for r in x_vals]
+        hoover_min[b] = [rd[(rd.default_eps==curr_eps) & (rd.default_boost == b)][rd.num_agents==r]['Hoover index'].min() for r in x_vals]
+   
+        axs.plot(x_vals, hoover_max[b], plot_marker[b], fillstyle='none', ms=plt_marker_size[b], label=plot_label[b])
+        axs.plot(x_vals, np.polyval(np.polyfit(x_vals,hoover_max[b],poly_app_deg),x_vals), plot_marker[b][0]+":", linewidth=.5)
+    
+        axs.plot(x_vals, hoover_min[b], plot_marker[b],  fillstyle='none', ms=plt_marker_size[b] )
+        axs.plot(x_vals, np.polyval(np.polyfit(x_vals,hoover_min[b],poly_app_deg),x_vals), plot_marker[b][0]+":", linewidth=.51)
+   
+        # axs.plot(hoover_data)
+        # axs.plot(x_vals_dense, hoover_data[x_vals_dense],"k",linewidth=1, markersize=4)
+
+        axs.set_xlim((2,x_vals[-1]+15))
+        axs.set_ylim((-0.05,0.85))
+
+        axs.text(15, 0.73, plot_desc, rasterized=False, usetex=True)
+        axs.set_xticks(x_vals)
+                    
+        if i in [6,7,8]:
+            axs.set_xlabel('Number of agents')
+        else:
+            axs.set_xticklabels([])           
+            
+        axs.set_yticks(np.arange(0, 1, step=0.2))
+            
+        if i in [0,3,6]:
+            axs.set_ylabel('Hoover index')
+        else:
+            axs.set_yticklabels([])
+
+            
+handles, labels = axs.get_legend_handles_labels()
+lgd = fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.525,1.05), ncol=4)
+
+display(fig)
+
+fig.tight_layout()
+fig.savefig("plots/"+ exp_desc +"_hoover.pdf", bbox_extra_artists=(lgd,), bbox_inches='tight')
 fig.savefig("plots/png/"+ exp_desc +".png")
