@@ -79,11 +79,11 @@ variable_params = {
          
 batch_run = mb.BatchRunnerMP(
         JanosikGraphModel,
-        nr_processes = 6,
+        nr_processes = 10,
         variable_parameters=variable_params,
         fixed_parameters=fixed_params,
-        iterations=10,
-        max_steps=100,
+        iterations=50,
+        max_steps=500,
         model_reporters={
             "Gini index" : indicators.gini_index,
             "Hoover index" : indicators.hoover_index,
