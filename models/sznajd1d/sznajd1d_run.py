@@ -41,12 +41,13 @@ def update_spin_sznajd(spin_chain, node):
 # main functionality
 def main():
     # simulation steps
-    steps = 100
+    steps = 1000
 
     # chain length
-    chain_dim = 100
+    # 24 is suitable for the terminal
+    chain_dim = 24
 
-    # tables with the results
+    # tables with the intermediate results
     spin_state = list()
     mean_value = list()
 
@@ -65,4 +66,6 @@ def main():
 
 if __name__ == '__main__':
     ret = main()
-    print(ret[1])
+    for a in ret[0]:
+        print (a)
+    print("Final decision:", ret[1][-1])
