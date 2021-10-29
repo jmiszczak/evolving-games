@@ -2,16 +2,23 @@
 
 Collection of scripts implementing models from papers on evolutionary game theory.
 
-Files are organized in three directories:
+Code in Python is organized in three directories:
 - `games` includes implementation of some games used as the model of dynamics, eg. Prisoner's dillema,
 - `models` contains implementation of various models,
 - `varia` contains some scripts related to network properties.
 
+NetLogo models are in `netlogo` directory.
+
+
 # Requirements
 
+## For running Python simulations
 Graphs are implemented using [NetworkX](http://networkx.github.io/). [Numpy](https://www.numpy.org/) and [Matplotlib](https://matplotlib.org/) are also required.
 
-Agent based models are implemented using [Mesa](https://github.com/projectmesa).
+Agent based models in python are implemented using [Mesa](https://github.com/projectmesa).
+
+## For running NetLogo
+NetLogo is a multi-agent programmable modeling environment. It can be obtained from <a href="http://ccl.northwestern.edu/netlogo/">NetLogo hompepage</a>. Models can be also run via <a href="http://www.netlogoweb.org/">NetLogo Web</a>.
 
 # Relevant papers
 
