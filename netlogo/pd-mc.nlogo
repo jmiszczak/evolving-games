@@ -1,16 +1,36 @@
+breed [prisoners prisoner]
+prisoners-own [ defection capital  ]
+
 to setup
   clear-all
-  create-turtles 10 [
+  create-prisoners number
+  ask prisoners [
     setxy random-xcor random-ycor
     set shape "person"
     set color red
   ]
-
+  reset-ticks
 end
 
 to go
 
+  ask prisoners [
+    move
+    ask other prisoners-here [set color red]
+  ]
+  ask prisoners [ set pcolor color ]
+  update-plot
+  tick
+end
 
+to move
+  rt random 50
+  lt random 50
+  fd 1
+end
+
+to update-plot
+  set-current-plot "Average capital"
 
 end
 @#$#@#$#@
@@ -28,25 +48,25 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 -16
 16
 -16
 16
-0
-0
+1
+1
 1
 ticks
 30.0
 
 BUTTON
-21
-33
-94
-66
-setup
+14
+314
+183
+347
+Setup
 setup
 NIL
 1
@@ -57,6 +77,81 @@ S
 NIL
 NIL
 1
+
+BUTTON
+14
+355
+184
+422
+Go
+go
+NIL
+1
+T
+OBSERVER
+NIL
+G
+NIL
+NIL
+1
+
+SLIDER
+13
+124
+185
+157
+number
+number
+10
+500
+66.0
+1
+1
+NIL
+HORIZONTAL
+
+PLOT
+672
+10
+1103
+301
+Average capital
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count prisoners"
+
+TEXTBOX
+16
+14
+166
+104
+Set the parameters:\n- number - number of players\n- defection - bias for defection in the community
+12
+0.0
+1
+
+SLIDER
+13
+178
+185
+211
+defection-bias
+defection-bias
+0
+1
+0.5
+0.05
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
