@@ -13,6 +13,10 @@ Graphs are implemented using [NetworkX](http://networkx.github.io/). [Numpy](htt
 
 Agent based models are implemented using [Mesa](https://github.com/projectmesa).
 
-# Relavant papers
+# Relevant papers
 
-- K. Sznajd-Weron, J. Sznajd, *Opinion evolution in closed community*, arXiv:[cond-mat/0101130v2](https://arxiv.org/abs/cond-mat/0101130)
+Models implemented in this repo were described in the following papers.
+
+- K. Sznajd-Weron, J. Sznajd, *Opinion evolution in closed community*, Int. J. Mod. Phys. C, Vol.11, No.6(2000) 1157-1165, DOI: <a href='https://doi.org/10.1142/S0129183100000936'>10.1142/S0129183100000936</a>, arXiv:[cond-mat/0101130v2](https://arxiv.org/abs/cond-mat/0101130)
+
+- J. Wu, C. Zhao, *Cooperation on the Monte Carlo Rule: Prisoner’s Dilemma Game on the Grid*. In: Sun X., He K., Chen X. (eds) Theoretical Computer Science. NCTCS 2019. Communications in Computer and Information Science, vol 1069. Springer, Singapore. <a href="https://doi.org/10.1007/978-981-15-0105-0_1">10.1007/978-981-15-0105-0_1</a>
