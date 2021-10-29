@@ -1,39 +1,27 @@
 to setup
   clear-all
-  create-turtles 100 [
+  create-turtles 10 [
     setxy random-xcor random-ycor
     set shape "person"
-    set color yellow
-  ]
-
-  ask one-of turtles [
     set color red
   ]
 
-  reset-ticks
 end
 
-
 to go
-  ask turtles [
-    set heading random 360
-    forward 1
-    if any? other turtles-here with [color = red]
-    [
-      set color red
-    ]
-  ]
-  tick
+
+
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
 10
-542
-343
+647
+448
 -1
 -1
-15.455
+13.0
 1
 10
 1
@@ -43,20 +31,20 @@ GRAPHICS-WINDOW
 1
 1
 1
--10
-10
--10
-10
-1
-1
+-16
+16
+-16
+16
+0
+0
 1
 ticks
 30.0
 
 BUTTON
-11
+21
 33
-84
+94
 66
 setup
 setup
@@ -65,54 +53,15 @@ NIL
 T
 OBSERVER
 NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-109
-33
-172
-66
-go
-go
-T
-1
-T
-OBSERVER
-NIL
-NIL
+S
 NIL
 NIL
 1
-
-MONITOR
-26
-83
-135
-128
-healthy people
-count turtles with [color = yellow]
-17
-1
-11
-
-MONITOR
-27
-149
-140
-194
-infected people
-count turtles with [color = red]
-17
-1
-11
 
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+Basic model for Prisoner's Dillema in multi-agent environment.
 
 ## HOW IT WORKS
 
