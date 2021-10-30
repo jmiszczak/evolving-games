@@ -26,4 +26,6 @@ Models implemented in this repo were described in the following papers.
 
 - K. Sznajd-Weron, J. Sznajd, *Opinion evolution in closed community*, Int. J. Mod. Phys. C, Vol.11, No.6(2000) 1157-1165, DOI: <a href='https://doi.org/10.1142/S0129183100000936'>10.1142/S0129183100000936</a>, arXiv:[cond-mat/0101130v2](https://arxiv.org/abs/cond-mat/0101130)
 
+- D. Stauffer, A. O. Sousa, and S. Moss De Oliveira, *Generalization to square lattice of sznajd sociophysics model*, International Journal of Modern Physics C, Vol. 11, No. 06, pp. 1239-1245 (2000), <a href="https://doi.org/10.1142/S012918310000105X">10.1142/S012918310000105X</a>.
+
 - J. Wu, C. Zhao, *Cooperation on the Monte Carlo Rule: Prisoner’s Dilemma Game on the Grid*. In: Sun X., He K., Chen X. (eds) Theoretical Computer Science. NCTCS 2019. Communications in Computer and Information Science, vol 1069. Springer, Singapore. <a href="https://doi.org/10.1007/978-981-15-0105-0_1">10.1007/978-981-15-0105-0_1</a>, arXiv:<a href="https://arxiv.org/abs/1904.06949">1904.06949</a>
