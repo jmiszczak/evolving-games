@@ -17,21 +17,23 @@ to setup
   setup-patches
   setup-agents
   update-global-variables
+  update-display
   reset-ticks
 end
 
 to go
   ask turtles [
-    move
+    move-agents
     get-infected
   ]
   update-global-variables
+  update-display
   tick
 end
 
 to setup-patches
 
-    ;; generate random obstacles for simulating interiors
+  ;; generate random obstacles for simulating interiors
   ask patches [
     set contaminated? false
     ifelse random-float 1.0 < init-obstacles-ratio / 100
@@ -41,23 +43,24 @@ to setup-patches
 
   ;; distribute contaminating material on the patches which are not obstacles
   ask patches [
-    if pcolor = white and random-float 1.0 < init-contamination-ratio / 100
+    if pcolor = white and random-float 100 < init-contamination-ratio
+    ;; this is a contaminated patch
     [
       set pcolor pink
       set contaminated? true
-    ] ;; this is a contaminated patch
+    ]
   ]
 end
 
 to setup-agents
   let move-to-patches patches with [ pcolor != black ]
-  create-turtles number-people [
-    set shape agent-shape
+  create-turtles population [
+    set shape turtle-shape
     if any? move-to-patches [ move-to one-of move-to-patches ]
     get-healthy
   ]
 
-  ask n-of 10 turtles
+  ask n-of (population * init-infected-ratio / 100) turtles
   [ get-sick ]
 end
 
@@ -66,13 +69,22 @@ to update-global-variables
     [ set %infected (count turtles with [ sick? ] / count turtles) * 100 ]
 end
 
-;; avoid obstacles during the move
-to move
-  let move-to-patches neighbors with [ pcolor != black ]
-  if any? move-to-patches [ move-to one-of move-to-patches]
+to update-display
+  ask turtles
+  [
+    if shape != turtle-shape [ set shape turtle-shape ]
+  ]
 end
 
- ;; three methods for getting infected
+;; avoid obstacles during the move
+to move-agents
+  if random-float 1000 < mobility-ratio [
+    let move-to-patches neighbors with [ pcolor != black ]
+    if any? move-to-patches [ move-to one-of move-to-patches]
+  ]
+end
+
+;; three methods for getting infected
 to get-infected
   get-infected-by-contamination
   get-infected-by-contact
@@ -80,7 +92,7 @@ to get-infected
 end
 
 to get-infected-by-contamination
-  if contaminated? and random-float 1.0 < patch-infection-prob / 100
+  if contaminated? and random-float 100 < patch-infection-ratio
   [ get-sick ]
 end
 
@@ -95,7 +107,7 @@ end
 to get-infected-by-proximity
   ask other turtles-on neighbors4
   [
-    if sick? and random-float 1.0 < 0.5 [
+    if sick? and random-float 1.0 < contact-infectiousness / 100 [
       get-sick
     ]
   ]
@@ -118,8 +130,8 @@ end
 GRAPHICS-WINDOW
 310
 10
-933
-634
+813
+514
 -1
 -1
 15.0
@@ -132,10 +144,10 @@ GRAPHICS-WINDOW
 0
 0
 1
--20
-20
--20
-20
+-16
+16
+-16
+16
 0
 0
 1
@@ -161,14 +173,14 @@ NIL
 
 SLIDER
 15
-110
-190
-143
+215
+270
+248
 init-contamination-ratio
 init-contamination-ratio
 0
 100
-4.0
+1.0
 1
 1
 NIL
@@ -177,48 +189,48 @@ HORIZONTAL
 SLIDER
 15
 165
-190
+270
 198
 init-obstacles-ratio
 init-obstacles-ratio
 0
 100
-38.0
+20.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-16
-213
-191
-246
-number-people
-number-people
+15
+110
+270
+141
+population
+population
 0
 150
-61.0
+23.0
 1
 1
 NIL
 HORIZONTAL
 
 CHOOSER
-15
-265
-190
-310
-agent-shape
-agent-shape
+515
+545
+690
+590
+turtle-shape
+turtle-shape
 "person" "circle"
 0
 
 MONITOR
-20
-490
-97
-535
+315
+545
+495
+590
 NIL
 %infected
 17
@@ -262,13 +274,13 @@ NIL
 SLIDER
 15
 320
-190
+270
 353
-patch-infection-prob
-patch-infection-prob
+patch-infection-ratio
+patch-infection-ratio
 0
 100
-6.0
+1.0
 1
 1
 NIL
@@ -276,11 +288,26 @@ HORIZONTAL
 
 SLIDER
 15
-370
-190
-403
+270
+270
+303
 init-infected-ratio
 init-infected-ratio
+0
+100
+1.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+15
+420
+270
+453
+proximity-infectiousness
+proximity-infectiousness
 0
 100
 10.0
@@ -289,25 +316,10 @@ init-infected-ratio
 NIL
 HORIZONTAL
 
-SLIDER
-15
-415
-232
-448
-contact-infectiousness
-contact-infectiousness
-0
-100
-7.0
-1
-1
-NIL
-HORIZONTAL
-
 PLOT
 10
-570
-210
+530
+290
 720
 Infection spread
 NIL
@@ -322,6 +334,36 @@ true
 PENS
 "sick" 1.0 0 -2674135 true "" "plot (count turtles with [ sick? ] / count turtles)"
 "contag" 1.0 0 -2064490 true "" "plot (count patches with [ pcolor = pink ] / count patches)"
+
+SLIDER
+15
+470
+270
+503
+mobility-ratio
+mobility-ratio
+0
+100
+1.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+15
+370
+270
+403
+contact-infectiousness
+contact-infectiousness
+0
+100
+25.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
