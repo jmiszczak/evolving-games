@@ -183,7 +183,7 @@ init-obstacles-ratio
 init-obstacles-ratio
 0
 100
-38.0
+24.0
 1
 1
 NIL
@@ -198,7 +198,7 @@ number-people
 number-people
 0
 150
-61.0
+24.0
 1
 1
 NIL
@@ -268,7 +268,7 @@ patch-infection-prob
 patch-infection-prob
 0
 100
-6.0
+54.0
 1
 1
 NIL
@@ -307,7 +307,7 @@ HORIZONTAL
 PLOT
 10
 570
-210
+280
 720
 Infection spread
 NIL
