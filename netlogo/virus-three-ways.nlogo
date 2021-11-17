@@ -1,3 +1,5 @@
+extensions [vid]
+
 turtles-own [
   sick?
   sick-time
