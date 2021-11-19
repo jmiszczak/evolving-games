@@ -1,9 +1,19 @@
+patches-own [
+  energy
+]
+
 to setup
   clear-all
   ask patches [
     ifelse random-float 1.0 < percentage-of-green / 100
-    [set pcolor green]
-    [set pcolor blue]
+    [
+      set pcolor green
+      set energy 1
+    ]
+    [
+      set pcolor blue
+      set energy -1
+    ]
   ]
   reset-ticks
 end
@@ -14,8 +24,14 @@ to vote
       ask patches at-points [ [-1 0] [-1 1] [0 2] [1 2] [0 -1] [1 -1] [2 0] [2 1] ]
       [
         ifelse vote-against?
-        [ set pcolor blue  ]
-        [ set pcolor green ]
+        [
+          set pcolor blue
+          set energy -1
+        ]
+        [
+          set pcolor green
+          set energy 1
+        ]
       ]
   ]
 
@@ -23,8 +39,14 @@ to vote
       ask patches at-points [ [-1 0] [-1 1] [0 2] [1 2] [0 -1] [1 -1] [2 0] [2 1] ]
       [
         ifelse vote-against?
-        [ set pcolor green ]
-        [ set pcolor blue ]
+        [
+          set pcolor green
+          set energy 1
+        ]
+        [
+          set pcolor blue
+          set energy -1
+        ]
       ]
   ]
 
@@ -145,15 +167,14 @@ plot 1
 step
 voting
 0.0
-1.0
-0.0
+1000.0
+-1.0
 1.0
 true
 false
 "" ""
 PENS
-"default" 1.0 0 -10899396 true "" "plot (count patches with [ pcolor = green ] / count patches)"
-"pen-1" 1.0 0 -13345367 true "" "plot ( count patches with [ pcolor = blue ]) / count patches"
+"resuls" 1.0 0 -7500403 true "" "plot ( mean [energy] of patches)"
 
 @#$#@#$#@
 ## WHAT IS IT?
