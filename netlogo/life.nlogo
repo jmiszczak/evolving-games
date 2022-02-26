@@ -44,20 +44,22 @@ end
 ;;
 ;; calculate the next state
 to  simulate-life-sync
-    let x (count neighbors with [ pcolor = green] )
+  let x (count neighbors with [ pcolor = green] )
+
+  ;; set plabel x ;; [debug]
 
   ifelse pcolor = green [
-    ;; set plabel x
-    ifelse x < 2 or x > 4 [
+    ifelse x < 2 or x >= 4 [ ;; x>=4 (weak inequality) - standard rule
       set next-pcolor white ;; ie. die
     ][
       set next-pcolor green ;; ie. stay alive
-    ] ;;
+    ]
   ][ ;; pcolor = white
     if x = 3 [
       set next-pcolor green ;; ie. live
     ]
   ]
+
 end
 
 ;;
@@ -68,7 +70,7 @@ to update-color
 end
 
 ;;
-;; asynchronous updating
+;; asynchronous updating - calculate and update
 ;;
 to simulate-life-async
   let x (count neighbors with [ pcolor = green] )
@@ -91,11 +93,11 @@ end
 GRAPHICS-WINDOW
 210
 10
-718
-519
+818
+619
 -1
 -1
-5.0
+3.0
 1
 10
 1
@@ -106,20 +108,20 @@ GRAPHICS-WINDOW
 1
 1
 0
-99
+199
 0
-99
-0
-0
+199
+1
+1
 1
 ticks
 30.0
 
 BUTTON
-21
-168
-187
-201
+20
+122
+190
+155
 Setup world
 setup
 NIL
@@ -133,7 +135,7 @@ NIL
 1
 
 SLIDER
-25
+20
 66
 191
 99
@@ -141,7 +143,7 @@ init-life
 init-life
 0
 100
-5.0
+11.0
 1
 1
 NIL
@@ -156,17 +158,17 @@ world-size
 world-size
 10
 200
-100.0
+200.0
 1
 1
 NIL
 HORIZONTAL
 
 BUTTON
-20
-218
-187
-251
+18
+237
+185
+270
 Play life
 go
 NIL
@@ -180,10 +182,10 @@ NIL
 1
 
 BUTTON
-18
-270
-185
-303
+19
+301
+186
+334
 Play forever
 go
 T
@@ -197,10 +199,10 @@ NIL
 1
 
 BUTTON
-17
-325
-181
-358
+18
+356
+182
+389
 Clear
 clear-all\nask patches [ set pcolor white]
 NIL
@@ -214,10 +216,10 @@ NIL
 1
 
 MONITOR
-18
-377
-179
-422
+19
+408
+180
+453
 % of living cells
 ( count patches with [ pcolor = green] ) / ( count patches) * 100
 4
@@ -225,10 +227,10 @@ MONITOR
 11
 
 SWITCH
-22
-117
-189
-150
+21
+177
+188
+210
 synchronous
 synchronous
 1
@@ -264,10 +266,6 @@ Another thing to try is to chenage the treshold for dying of the cell.
 
 At the moment all patches are updated during each step.
 
-## NETLOGO FEATURES
-
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
-
 ## RELATED MODELS
 
 Many models in the NetLogo Models Library already implement this game.
@@ -276,7 +274,7 @@ Many models in the NetLogo Models Library already implement this game.
 
 Asynchronous cellular automaton, 	https://en.wikipedia.org/wiki/Asynchronous_cellular_automaton
 
-Hendrik J. Blok and Birger Bergersen, "Synchronous versus asynchronous updating in the “game of Life”", Phys. Rev. E 59, 3876 (1999), https://doi.org/10.1103/PhysRevE.59.3876
+H.J. Blok, B. Bergersen, "Synchronous versus asynchronous updating in the “game of Life”", Phys. Rev. E 59, 3876 (1999), https://doi.org/10.1103/PhysRevE.59.3876
 @#$#@#$#@
 default
 true
