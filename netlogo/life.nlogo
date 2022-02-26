@@ -1,54 +1,101 @@
+patches-own [
+  next-pcolor ;; the next state is calculated using current pcolor
+]
+
 ;; clear the board and create some life
 to setup
   clear-all
+  reset-ticks
 
+  ;; make the world with custom size
   resize-world 0 (world-size - 1) 0 (world-size - 1)
-  set-patch-size floor ( 100 / (sqrt world-size) )
+  set-patch-size floor ( 50 / (sqrt world-size) )
 
+  ;; use next-pcolor to initialize pcolor
   ask patches [
-    set pcolor white
-    if random 100 < init-life [
-      set pcolor green
+    ifelse random 100 < init-life [
+      set next-pcolor green
+    ][
+      set next-pcolor white
     ]
-  ]
-end
-
-;; main function
-to go
-  ask patches [
-    simulate-life
+    set pcolor next-pcolor
   ]
 end
 
 ;;
-to simulate-life
+;; main function
+;;
+to go
+  ask patches [
+    ifelse synchronous [
+      simulate-life-sync
+    ][
+      simulate-life-async
+    ]
+  ]
+  ask patches [
+    update-color
+  ]
+  tick
+end
+
+;;
+;; synchronous updating
+;;
+;; calculate the next state
+to  simulate-life-sync
+    let x (count neighbors with [ pcolor = green] )
+
+  ifelse pcolor = green [
+    ;; set plabel x
+    ifelse x < 2 or x > 4 [
+      set next-pcolor white ;; ie. die
+    ][
+      set next-pcolor green ;; ie. stay alive
+    ] ;;
+  ][ ;; pcolor = white
+    if x = 3 [
+      set next-pcolor green ;; ie. live
+    ]
+  ]
+end
+
+;;
+;; update the state
+;;
+to update-color
+  set pcolor next-pcolor
+end
+
+;;
+;; asynchronous updating
+;;
+to simulate-life-async
   let x (count neighbors with [ pcolor = green] )
 
   ifelse pcolor = green [
     ;; set plabel x
-    ifelse x < 2 or x >= 4
-    [
-      set pcolor white
-    ]
-    [
-      set pcolor green
+    ifelse x < 2 or x >= 4 [
+      set next-pcolor white ;; ie. die
+    ][
+      set next-pcolor green ;; ie. stay alive
     ] ;;
-  ]
-  [ ;; pcolor = white
+  ][ ;; pcolor = white
     if x = 3 [
-      set pcolor green
+      set next-pcolor green ;; ie. live
     ]
   ]
+  set pcolor next-pcolor
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
 10
-908
-709
+718
+519
 -1
 -1
-14.0
+5.0
 1
 10
 1
@@ -59,9 +106,9 @@ GRAPHICS-WINDOW
 1
 1
 0
-49
+99
 0
-49
+99
 0
 0
 1
@@ -69,10 +116,10 @@ ticks
 30.0
 
 BUTTON
-25
-111
-191
-144
+21
+168
+187
+201
 Setup world
 setup
 NIL
@@ -86,40 +133,40 @@ NIL
 1
 
 SLIDER
-24
-57
-196
-90
+25
+66
+191
+99
 init-life
 init-life
 0
 100
-7.0
+5.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-25
+23
 10
-197
+195
 43
 world-size
 world-size
-0
-500
-50.0
+10
+200
+100.0
 1
 1
 NIL
 HORIZONTAL
 
 BUTTON
-24
-161
-191
-194
+20
+218
+187
+251
 Play life
 go
 NIL
@@ -133,10 +180,10 @@ NIL
 1
 
 BUTTON
-25
-213
-189
-246
+18
+270
+185
+303
 Play forever
 go
 T
@@ -150,10 +197,10 @@ NIL
 1
 
 BUTTON
-25
-268
-189
-301
+17
+325
+181
+358
 Clear
 clear-all\nask patches [ set pcolor white]
 NIL
@@ -167,20 +214,33 @@ NIL
 1
 
 MONITOR
-29
-330
-128
-375
-%life
-( count patches with [ pcolor = green] ) / ( count patches with [ pcolor = white])
+18
+377
+179
+422
+% of living cells
+( count patches with [ pcolor = green] ) / ( count patches) * 100
 4
 1
 11
+
+SWITCH
+22
+117
+189
+150
+synchronous
+synchronous
+1
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?
 
 Conway's Game of Life: https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
+
+Both synchronous and asynchronous updating policies are implemented.
 
 ## HOW IT WORKS
 
@@ -188,19 +248,21 @@ Red cells are alive, white cells are dead.
 
 ## HOW TO USE IT
 
-Setu the initial conditions and observer the evolution.
+Set the initial conditions and observer the evolution.
 
 ## THINGS TO NOTICE
 
-Some popular formation could occur.
+Some popular formation could occur in the case of synchronous updating. It is possible to switch between synchronous and asynchronous updating durinig the game.
 
 ## THINGS TO TRY
 
-The only intersting modificaiton is the percentage of living celles at the beginign of the game.
+One intersting modificaiton is the percentage of living celles at the begining of the game.
+
+Another thing to try is to chenage the treshold for dying of the cell.
 
 ## EXTENDING THE MODEL
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+At the moment all patches are updated during each step.
 
 ## NETLOGO FEATURES
 
@@ -208,11 +270,13 @@ The only intersting modificaiton is the percentage of living celles at the begin
 
 ## RELATED MODELS
 
-(models in the NetLogo Models Library and elsewhere which are of related interest)
+Many models in the NetLogo Models Library already implement this game.
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+Asynchronous cellular automaton, 	https://en.wikipedia.org/wiki/Asynchronous_cellular_automaton
+
+Hendrik J. Blok and Birger Bergersen, "Synchronous versus asynchronous updating in the “game of Life”", Phys. Rev. E 59, 3876 (1999), https://doi.org/10.1103/PhysRevE.59.3876
 @#$#@#$#@
 default
 true
