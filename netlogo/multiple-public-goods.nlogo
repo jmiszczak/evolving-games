@@ -68,14 +68,26 @@ end
 
 ;; main simulation
 to go
+  ask turtles [
+    play-pg-game
+  ]
   tick
+end
+
+;; elementary game played by a group
+to play-pg-game
+
+  ask turtles-on neighbors4 [
+    set pcolor gray
+  ]
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 236
 10
-602
-377
+604
+379
 -1
 -1
 27.735009811261456
