@@ -51,7 +51,7 @@ to  simulate-life-sync
   ifelse random-float 1 < rule-switch-prob [
 
     ifelse pcolor = black [
-      ifelse x < 2 or x > 4 [ ;; x>4 (sharp inequality) - modified rule
+      ifelse x < 2 or x > second-treshold [ ;; x>4 (sharp inequality) - modified rule
         set next-pcolor white ;; ie. die
       ][
         set next-pcolor black ;; ie. stay alive
@@ -160,7 +160,7 @@ init-life
 init-life
 0
 100
-11.0
+4.0
 1
 1
 NIL
@@ -182,10 +182,10 @@ NIL
 HORIZONTAL
 
 BUTTON
-20
-289
-187
-322
+19
+343
+186
+376
 Play life
 go
 NIL
@@ -199,10 +199,10 @@ NIL
 1
 
 BUTTON
-21
-341
-188
-374
+20
+395
+187
+428
 Play forever
 go
 T
@@ -216,10 +216,10 @@ NIL
 1
 
 BUTTON
-23
-387
-187
-420
+22
+441
+186
+474
 Clear
 clear-all\nask patches [ set pcolor white]
 NIL
@@ -233,10 +233,10 @@ NIL
 1
 
 MONITOR
-22
-492
-183
-537
+21
+546
+182
+591
 % of living cells
 ( count patches with [ pcolor = black] ) / ( count patches) * 100
 4
@@ -250,7 +250,7 @@ SWITCH
 210
 synchronous
 synchronous
-1
+0
 1
 -1000
 
@@ -263,17 +263,17 @@ rule-switch-prob
 rule-switch-prob
 0
 1
-0.22
+1.0
 0.01
 1
 NIL
 HORIZONTAL
 
 BUTTON
-21
-436
-182
-469
+20
+490
+181
+523
 Play 500 generations
 repeat 500 [go]
 NIL
@@ -285,6 +285,21 @@ T
 NIL
 NIL
 1
+
+SLIDER
+22
+280
+194
+313
+second-treshold
+second-treshold
+2
+8
+8.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
