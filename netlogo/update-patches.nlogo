@@ -1,86 +1,62 @@
-patches-own [
-  next-pcolor ;; the next state is calculated using current pcolor
-]
 
-;; clear the board and create some life
+
+
 to setup
   clear-all
   reset-ticks
-
-  ;; make the world with custom size
-  resize-world 0 (world-size - 1) 0 (world-size - 1)
-  set-patch-size floor ( 50 / (sqrt world-size) )
-
-  ;; use next-pcolor to initialize pcolor
   ask patches [
-    ifelse random 100 < init-life [
-      set next-pcolor green
-    ][
-      set next-pcolor white
-    ]
-    set pcolor next-pcolor
+    set pcolor white
   ]
+
+
 end
 
-;;
-;; main function
-;;
-to go
-  ifelse synchronous [
-    ask patches [
-      simulate-life
-    ]
-    ask patches [
-      update-color
-    ]
-  ][
-    ask patches [
-      simulate-life
-      update-color
-    ]
+to go1
+  ask patches [
+  (ifelse random 4 = 0 [
+    do1
   ]
-
+    random 4 = 1 [
+    do2
+    ] random 4 = 2
+    [
+    do1
+  ]
+    random 4 = 3 [
+    do2
+  ])
+  ]
   tick
 end
 
-;;
-;; calculate the updating rule
-;; and save it the next state
-;;
-to  simulate-life
-  let x (count neighbors with [ pcolor = green] )
 
-  ;; set plabel x ;; [debug]
-
-  ifelse pcolor = green [
-    ifelse x < 2 or x >= 4 [ ;; x>=4 (weak inequality) - standard rule
-      set next-pcolor white ;; ie. die
+to go2
+  ask patches [
+  ifelse (ticks mod 2) = 1 [
+      do1
     ][
-      set next-pcolor green ;; ie. stay alive
-    ]
-  ][ ;; pcolor = white
-    if x = 3 [
-      set next-pcolor green ;; ie. live
+      do2
     ]
   ]
-
+  tick
 end
 
-;;
-;; update the state
-;;
-to update-color
-  set pcolor next-pcolor
+to do1
+  set pcolor black
+end
+
+to do2
+  set pcolor red
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
 10
-818
-619
+647
+448
 -1
 -1
-3.0
+13.0
 1
 10
 1
@@ -90,174 +66,103 @@ GRAPHICS-WINDOW
 1
 1
 1
+-16
+16
+-16
+16
 0
-199
 0
-199
-1
-1
 1
 ticks
 30.0
 
 BUTTON
-20
-122
-190
-155
-Setup world
+107
+25
+170
+58
+go1
+go1
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+16
+26
+89
+59
+setup
 setup
 NIL
 1
 T
 OBSERVER
 NIL
-S
 NIL
-NIL
-1
-
-SLIDER
-20
-66
-191
-99
-init-life
-init-life
-0
-100
-11.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-23
-10
-195
-43
-world-size
-world-size
-10
-200
-200.0
-1
-1
-NIL
-HORIZONTAL
-
-BUTTON
-18
-237
-185
-270
-Play life
-go
-NIL
-1
-T
-OBSERVER
-NIL
-P
 NIL
 NIL
 1
 
 BUTTON
-19
-301
-186
-334
-Play forever
-go
-T
-1
-T
-OBSERVER
-NIL
-F
-NIL
-NIL
-1
-
-BUTTON
-18
-356
-182
-389
-Clear
-clear-all\nask patches [ set pcolor white]
+55
+184
+118
+217
+go2
+go2
 NIL
 1
 T
 OBSERVER
 NIL
-C
 NIL
 NIL
+NIL
 1
-
-MONITOR
-19
-408
-180
-453
-% of living cells
-( count patches with [ pcolor = green] ) / ( count patches) * 100
-4
-1
-11
-
-SWITCH
-21
-177
-188
-210
-synchronous
-synchronous
-0
-1
--1000
 
 @#$#@#$#@
 ## WHAT IS IT?
 
-Conway's Game of Life: https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life
-
-Both synchronous and asynchronous updating policies are implemented.
+(a general understanding of what the model is trying to show or explain)
 
 ## HOW IT WORKS
 
-Red cells are alive, white cells are dead.
+(what rules the agents use to create the overall behavior of the model)
 
 ## HOW TO USE IT
 
-Set the initial conditions and observer the evolution.
+(how to use the model, including a description of each of the items in the Interface tab)
 
 ## THINGS TO NOTICE
 
-Some popular formation could occur in the case of synchronous updating. It is possible to switch between synchronous and asynchronous updating durinig the game.
+(suggested things for the user to notice while running the model)
 
 ## THINGS TO TRY
 
-One intersting modificaiton is the percentage of living celles at the begining of the game.
-
-Another thing to try is to chenage the treshold for dying of the cell.
+(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
 
 ## EXTENDING THE MODEL
 
-At the moment all patches are updated during each step.
+(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+
+## NETLOGO FEATURES
+
+(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
 
 ## RELATED MODELS
 
-Many models in the NetLogo Models Library already implement this game.
+(models in the NetLogo Models Library and elsewhere which are of related interest)
 
 ## CREDITS AND REFERENCES
 
-Asynchronous cellular automaton, 	https://en.wikipedia.org/wiki/Asynchronous_cellular_automaton
-
-H.J. Blok, B. Bergersen, "Synchronous versus asynchronous updating in the “game of Life”", Phys. Rev. E 59, 3876 (1999), https://doi.org/10.1103/PhysRevE.59.3876
+(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
 @#$#@#$#@
 default
 true
