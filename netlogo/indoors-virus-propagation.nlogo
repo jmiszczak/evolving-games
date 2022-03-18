@@ -23,17 +23,42 @@ patches-own [
 globals [
   %infected
   %contaminated
+  init-contamination-ratio
+  machine-allocation-prob
+  obstacle-color
+  machine-color
+  contaminated-patch-color
+  time-interval
 ]
 
+;;
+;; process initialization
+;;
 to setup
   clear-all
+
+  ;;
+  ;; some variables without the controls in the UI
+  ;;
+  set init-contamination-ratio 0
+  set machine-allocation-prob 0.1
+  set obstacle-color black
+  set machine-color blue
+  set contaminated-patch-color pink
+  set time-interval 900 ;; 1/4 hour
+  ;;
+  ;; setup procedure
+  ;;
+
   setup-patches
   setup-turtles
+
+
   reset-ticks
 end
 
 ;;
-;;
+;; single step
 ;;
 to go
   ask turtles [
@@ -61,16 +86,22 @@ to go
   ]
 
   update-global-variables
+
   tick
 end
 
+;;
 ;; generate obstacles and containated patches
+;; configurations are defined as functions
+;;
 to setup-patches
 
   ;; generate obstacles for simulating interiors
   ask patches [
     set pcolor white
+    set contaminated? false
   ]
+
   (ifelse configuration = "world-1" [
     setup-wordl-1
   ] configuration = "world-2" [
@@ -79,101 +110,122 @@ to setup-patches
     setup-wordl-3
   ])
 
-  ;; distribute contaminating material on the patches which are not obstacles
+  ;;
+  ;; distribute contaminating material on the patches withoout obstacles
+  ;; machines can also be contaminated
+  ;;
   ask patches [
-    ;;if pcolor = white and random-float 100 < init-contamination-ratio
+    if pcolor = white and random-float 100 < init-contamination-ratio
     ;; this is a contaminated patch
-   ;; [
-   ;;   set pcolor pink
-   ;;   set contaminated? true
-   ;; ]
+    [
+      set pcolor contaminated-patch-color
+      set contaminated? true
+    ]
   ]
 end
 
 ;;
-;; two rooms
+;; configuration 1 - two rooms
 ;;
 to setup-wordl-1
   ask patches [
     if pxcor = 0 or pycor = 0 or pxcor = max-pxcor or pycor = max-pycor [
-      set pcolor black
+      set pcolor obstacle-color
     ]
+
     if pycor = max-pycor / 2 [
-      set pcolor black
+      set pcolor obstacle-color
     ]
 
-    if pycor = max-pycor / 2 and ( pxcor = max-pxcor / 2 or pxcor = max-pxcor / 2  + 1 or pxcor = max-pxcor / 2 - 1 )[
-      set pcolor white
+    if pycor = max-pycor / 2 and ( pxcor = max-pxcor / 2 or pxcor = max-pxcor / 2  + 1 or pxcor = max-pxcor / 2 - 1 ) [
+      set pcolor red
     ]
 
-    if pcolor != black and ( pxcor = max-pxcor / 2 or pxcor = max-pxcor / 2  + 1 or pxcor = max-pxcor / 2 - 1 )[
+    ;; make corridor
+    if pcolor != obstacle-color and ( pxcor = max-pxcor / 2 or pxcor = max-pxcor / 2  + 1 or pxcor = max-pxcor / 2 - 1 )[
       set pcolor gray + 4
     ]
 
-
-    if pcolor != black and pcolor != gray + 4 and pycor != max-pycor / 2 [
-      if random-float 1 < 0.1 [
-        set pcolor blue
+    if pcolor != obstacle-color and pcolor != gray + 4 and pycor != max-pycor / 2 [
+      if random-float 1 < machine-allocation-prob [
+        set pcolor machine-color
       ]
     ]
+
+    ;; clear corridor
+    if pcolor = gray + 4 [
+      set pcolor white
+    ]
+
   ]
 end
 
 ;;
-;; one large room, one small room
+;; configuration 2 - one large room, one small room
 ;;
 to setup-wordl-2
   ask patches [
     if pxcor = 0 or pycor = 0 or pxcor = max-pxcor or pycor = max-pycor [
-      set pcolor black
+      set pcolor obstacle-color
     ]
+
     if pycor = max-pycor / 4 [
-      set pcolor black
+      set pcolor obstacle-color
     ]
 
     if pycor = max-pycor / 4 and ( pxcor = max-pxcor / 2 or pxcor = max-pxcor / 2  + 1 or pxcor = max-pxcor / 2 - 1 )[
       set pcolor white
     ]
 
-    if pcolor != black and ( pxcor = max-pxcor / 2 or pxcor = max-pxcor / 2  + 1 or pxcor = max-pxcor / 2 - 1 )[
+    if pcolor != obstacle-color and ( pxcor = max-pxcor / 2 or pxcor = max-pxcor / 2  + 1 or pxcor = max-pxcor / 2 - 1 )[
       set pcolor gray + 4
     ]
 
-
-    if pcolor != black and pcolor != gray + 4 and pycor != max-pycor / 2 [
-      if random-float 1 < 0.1 [
-        set pcolor blue
+    if pcolor != obstacle-color and pcolor != gray + 4 and pycor != max-pycor / 2 [
+      if random-float 1 < machine-allocation-prob [
+        set pcolor machine-color
       ]
+    ]
+
+    ;; clear corridor
+    if pcolor = gray + 4 [
+      set pcolor white
     ]
   ]
 end
 
 ;;
-;; three rooms
+;; configuration 3 - three rooms
 ;;
 to setup-wordl-3
   ask patches [
     if pxcor = 0 or pycor = 0 or pxcor = max-pxcor or pycor = max-pycor [
-      set pcolor black
+      set pcolor obstacle-color
     ]
+
     if pycor = max-pycor / 4 or pycor = 3 * max-pycor / 4 [
-      set pcolor black
+      set pcolor obstacle-color
     ]
 
     if pycor = max-pycor / 4 or pycor = 3 * max-pycor / 4 and ( pxcor = max-pxcor / 2 or pxcor = max-pxcor / 2  + 1 or pxcor = max-pxcor / 2 - 1 )[
       set pcolor white
     ]
 
-    if pcolor != black and ( pxcor = max-pxcor / 2 or pxcor = max-pxcor / 2  + 1 or pxcor = max-pxcor / 2 - 1 )[
+    if pcolor != obstacle-color and ( pxcor = max-pxcor / 2 or pxcor = max-pxcor / 2  + 1 or pxcor = max-pxcor / 2 - 1 )[
       set pcolor gray + 4
     ]
 
-
-    if pcolor != black and pcolor != gray + 4 and pycor != max-pycor / 2 [
-      if random-float 1 < 0.1 [
-        set pcolor blue
+    if pcolor != obstacle-color and pcolor != gray + 4 and pycor != max-pycor / 2 [
+      if random-float 1 < machine-allocation-prob [
+        set pcolor machine-color
       ]
     ]
+
+    ;; clear corridor
+    if pcolor = gray + 4 [
+      set pcolor white
+    ]
+
   ]
 end
 
@@ -181,11 +233,18 @@ end
 ;; setup agents
 ;;
 
+;;
 ;; create agents and make some of them sick
+;;
 to setup-turtles
-  let move-to-patches patches with [ pcolor != black and pcolor != blue ]
+  let move-to-patches patches with [
+    pcolor != obstacle-color and
+    pcolor != machine-color
+  ]
+
   create-turtles population [
     set shape "person"
+    set sick? false
     set sick-time 0
     set total-healty-time 0.0001
     if any? move-to-patches [ move-to one-of move-to-patches ]
@@ -193,13 +252,16 @@ to setup-turtles
   ]
 
   ask n-of init-infected-number turtles [
+    set sick? true
     get-sick
     set sick-time 0
     set total-sick-time 0
   ]
 end
 
+;;
 ;; update reporting variables
+;;
 to update-global-variables
   if count turtles > 0 [
     set %infected (count turtles with [ sick? ] / count turtles) * 100
@@ -214,11 +276,17 @@ end
 
 ;; avoid obstacles during the move
 to move-turtles
-  if random-float 1 < mobility-prob [
-    let move-to-patches neighbors with [ pcolor != black ]
-    if random-float 1.0 <  (count move-to-patches) / (count neighbors) [
+  let current-mobility mobility-prob
+  if count neighbors4 with [ pcolor = machine-color ] = 0
+  [
+    set current-mobility 1000 * mobility-prob
+  ]
+
+  if random-float 1 < current-mobility / time-interval [
+    let move-to-patches neighbors with [ pcolor != obstacle-color and pcolor != machine-color ]
+    ;;if random-float 1.0 <  (count move-to-patches) / (count neighbors) [
       if any? move-to-patches [ move-to one-of move-to-patches ]
-    ]
+    ;;]
   ]
 end
 
@@ -226,7 +294,7 @@ end
 to get-infected
   get-infected-by-contamination
   get-infected-by-contact
-  get-infected-by-proximity
+  ;;get-infected-by-proximity
 end
 
 ;; get infected by contact with contaminated patch
@@ -261,7 +329,8 @@ end
 
 ;; leave some contaminating material on the patch
 to infect-patches
-  if sick? and random-float 1 < patch-contamination-prob
+  ;;set label sick?
+  if sick? and ( random-float 1 < patch-contamination-prob )
   [
     set pcolor pink
     set contaminated? true
@@ -270,7 +339,7 @@ end
 
 ;; healing process for patches
 to heal-patches
-  if contaminated? and random-float 1 < patch-heal-prob
+  if contaminated? ;;and random-float 1 < patch-heal-prob
   [
     set pcolor white
     set contaminated? false
@@ -293,7 +362,7 @@ end
 ;;
 
 to-report indirect-infection-weight
-report 1 - (direct-infection-weight + patch-infection-weight)
+  report 1 - (direct-infection-weight + patch-infection-weight)
 end
 
 ;; only sick agents are immune
@@ -388,7 +457,7 @@ population
 population
 0
 100
-16.0
+21.0
 1
 1
 NIL
@@ -417,7 +486,7 @@ BUTTON
 185
 93
 Run
-repeat 5000 [go]
+repeat 8 * 3600 [go]
 NIL
 1
 T
@@ -437,7 +506,7 @@ init-infected-number
 init-infected-number
 0
 100
-3.0
+11.0
 1
 1
 NIL
@@ -452,7 +521,7 @@ mobility-prob
 mobility-prob
 0
 1
-0.5
+1.0
 0.01
 1
 NIL
@@ -502,7 +571,7 @@ direct-infection-weight
 direct-infection-weight
 0
 1
-0.33
+0.32
 0.01
 1
 NIL
@@ -587,7 +656,7 @@ CHOOSER
 configuration
 configuration
 "world-1" "world-2" "world-3"
-2
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
