@@ -457,7 +457,7 @@ population
 population
 0
 100
-21.0
+100.0
 1
 1
 NIL
@@ -486,7 +486,7 @@ BUTTON
 185
 93
 Run
-repeat 8 * 3600 [go]
+repeat 8 * 60 [go]
 NIL
 1
 T
@@ -506,7 +506,7 @@ init-infected-number
 init-infected-number
 0
 100
-11.0
+10.0
 1
 1
 NIL
@@ -521,7 +521,7 @@ mobility-prob
 mobility-prob
 0
 1
-1.0
+0.57
 0.01
 1
 NIL
@@ -571,7 +571,7 @@ direct-infection-weight
 direct-infection-weight
 0
 1
-0.32
+0.69
 0.01
 1
 NIL
@@ -586,7 +586,7 @@ patch-infection-weight
 patch-infection-weight
 0
 1
-0.33
+0.31
 0.01
 1
 NIL
@@ -601,7 +601,7 @@ agent-healing-prob
 agent-healing-prob
 0
 1
-0.15
+0.0
 0.01
 1
 NIL
@@ -616,7 +616,7 @@ patch-heal-prob
 patch-heal-prob
 0
 1
-0.39
+0.0
 0.01
 1
 NIL
@@ -656,7 +656,7 @@ CHOOSER
 configuration
 configuration
 "world-1" "world-2" "world-3"
-0
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
