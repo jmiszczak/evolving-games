@@ -656,7 +656,7 @@ CHOOSER
 configuration
 configuration
 "world-1" "world-2" "world-3"
-1
+2
 
 @#$#@#$#@
 ## WHAT IS IT?
