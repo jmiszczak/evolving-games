@@ -1,12 +1,23 @@
+;;
+;;
+;;
+globals [
+  ignoring-events
+]
+
+;;
 ;; atributes of patches
+;;
 patches-own [
   my-contribution ;; 1 for cooperation, 0 for defection
   current-contribution
-  neighborhood
+  current-neighborhood
   wealth
 ]
 
+;;
 ;; iinitilizaiton
+;;
 to setup
   clear-all
   ask patches [
@@ -24,6 +35,8 @@ to setup
 end
 
 ;;
+;;
+;;
 to go
   if (count patches with [pcolor = red] = 0) or (count patches with [pcolor = white] = 0) [
     stop
@@ -34,7 +47,9 @@ to go
   tick
 end
 
+;;
 ;; basic version of Public Goods Game
+;;
 to play-pgg
   ;; decide which neighbors will be taken into account
   select-neighborhood
@@ -44,21 +59,50 @@ to play-pgg
   evolve-strategy
 end
 
+;;
+;;
+;;
 to select-neighborhood
+  let lower-bound 0
+  ifelse allow-ignore = true [
+      set lower-bound 0
+  ][
+    set lower-bound 1
+  ]
   (ifelse neighborhood-type = "von Neuman" [
-    set neighborhood neighbors4
+    set current-neighborhood neighbors4
   ] neighborhood-type = "Moore" [
-    set neighborhood neighbors
-  ] neighborhood-type = "random" [
-    set neighborhood n-of 3 neighbors ;; random elements
+    set current-neighborhood neighbors
+  ] neighborhood-type = "mixed" [
+    ifelse random-float 1.0 < 0.5 [
+      set current-neighborhood neighbors4
+    ][
+       set current-neighborhood neighbors
+    ]
+  ] neighborhood-type = "random-n" [
+    set current-neighborhood n-of (( random (rand-n-size + 1) ) + lower-bound) neighbors ;; random number ofelements
+  ] neighborhood-type = "Moore-or-ignore" [
+
+    ifelse random-float 1.0 < 0.5 [
+      set current-neighborhood neighbors
+    ][
+      set current-neighborhood n-of lower-bound neighbors
+    ]
+
   ])
 end
 
+;;
+;;
+;;
 to calculate-profit
-  set current-contribution synergy-factor * sum [my-contribution] of neighbors
+  set current-contribution synergy-factor * ( sum [my-contribution] of current-neighborhood + my-contribution)
   set wealth wealth + current-contribution
 end
 
+;;
+;;
+;;
 to evolve-strategy
   ifelse current-contribution < 1 [
     set pcolor red
@@ -69,12 +113,18 @@ to evolve-strategy
   ]
 end
 
+;;
+;;
+;;
+to-report mean-contribution
+  report mean [current-contribution] of patches
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
-389
-20
-1000
-632
+249
+12
+860
+624
 -1
 -1
 3.0
@@ -91,8 +141,8 @@ GRAPHICS-WINDOW
 100
 -100
 100
-0
-0
+1
+1
 1
 ticks
 30.0
@@ -123,17 +173,17 @@ init-defectors-percent
 init-defectors-percent
 0
 100
-50.0
+94.0
 1
 1
 %
 HORIZONTAL
 
 PLOT
-7
-225
-383
-502
+885
+15
+1261
+292
 Cooperators vs defectors
 times strep
 fraction of agents
@@ -145,8 +195,8 @@ true
 false
 "" ""
 PENS
-"cooperators" 1.0 0 -2674135 true "" "plot (count patches with [pcolor = red]) / count patches"
-"defectors" 1.0 0 -7500403 true "" "plot (count patches with [pcolor = white]) / count patches"
+"cooperators" 1.0 0 -14070903 true "" "plot (count patches with [pcolor = white]) / count patches"
+"defectors" 1.0 0 -2674135 true "" "plot (count patches with [pcolor = red]) / count patches"
 
 BUTTON
 114
@@ -155,7 +205,7 @@ BUTTON
 52
 NIL
 go
-NIL
+T
 1
 T
 OBSERVER
@@ -174,31 +224,31 @@ synergy-factor
 synergy-factor
 0
 1
-0.25
+0.585
 0.001
 1
 NIL
 HORIZONTAL
 
 MONITOR
-143
-533
-218
-578
+153
+585
+228
+630
 defectors
-count patches with [pcolor = red]
-17
+count patches with [pcolor = red] / count patches
+4
 1
 11
 
 MONITOR
-18
-531
-111
-576
+28
+583
+121
+628
 cooperators
-count patches with [pcolor = white]
-17
+count patches with [pcolor = white] / count patches
+4
 1
 11
 
@@ -209,8 +259,52 @@ CHOOSER
 209
 neighborhood-type
 neighborhood-type
-"von Neuman" "Moore" "random"
-2
+"von Neuman" "Moore" "mixed" "random-n" "Moore-or-ignore"
+3
+
+SLIDER
+18
+224
+157
+257
+rand-n-size
+rand-n-size
+0
+8
+7.0
+1
+1
+NIL
+HORIZONTAL
+
+SWITCH
+17
+284
+160
+317
+allow-ignore
+allow-ignore
+0
+1
+-1000
+
+PLOT
+884
+332
+1262
+618
+mean contribution
+NIL
+NIL
+0.0
+1000.0
+0.0
+5.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot mean-contribution"
 
 @#$#@#$#@
 ## WHAT IS IT?
