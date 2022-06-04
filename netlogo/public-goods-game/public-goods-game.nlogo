@@ -53,8 +53,15 @@ end
 to play-pgg
   ;; decide which neighbors will be taken into account
   select-neighborhood
+  calculate-resulting-profit
+  let cc current-contribution
+  ask current-neighborhood [
+    set current-contribution cc
+    set wealth wealth + current-contribution
+    evolve-strategy
+  ]
   ;; profit from the current round
-  calculate-profit
+
   ;; evolution of the strategy
   evolve-strategy
 end
@@ -83,10 +90,10 @@ to select-neighborhood
     set current-neighborhood n-of (( random (rand-n-size + 1) ) + lower-bound) neighbors ;; random number ofelements
   ] neighborhood-type = "Moore-or-ignore" [
 
-    ifelse random-float 1.0 < 0.5 [
-      set current-neighborhood neighbors
-    ][
+    ifelse random-float 1.0 < ignore-moore-prob [
       set current-neighborhood n-of lower-bound neighbors
+    ][
+      set current-neighborhood neighbors
     ]
 
   ])
@@ -95,8 +102,8 @@ end
 ;;
 ;;
 ;;
-to calculate-profit
-  set current-contribution synergy-factor * ( sum [my-contribution] of current-neighborhood + my-contribution)
+to calculate-resulting-profit
+  set current-contribution ( synergy-factor * ( sum [my-contribution] of current-neighborhood + my-contribution) ) / ( count current-neighborhood + 1)
   set wealth wealth + current-contribution
 end
 
@@ -123,8 +130,8 @@ end
 GRAPHICS-WINDOW
 249
 12
-860
-624
+560
+324
 -1
 -1
 3.0
@@ -137,10 +144,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--100
-100
--100
-100
+-50
+50
+-50
+50
 1
 1
 1
@@ -173,17 +180,17 @@ init-defectors-percent
 init-defectors-percent
 0
 100
-94.0
+50.0
 1
 1
 %
 HORIZONTAL
 
 PLOT
-885
-15
-1261
-292
+652
+16
+1028
+293
 Cooperators vs defectors
 times strep
 fraction of agents
@@ -223,9 +230,9 @@ SLIDER
 synergy-factor
 synergy-factor
 0
-1
-0.585
-0.001
+8
+2.19
+0.01
 1
 NIL
 HORIZONTAL
@@ -260,7 +267,7 @@ CHOOSER
 neighborhood-type
 neighborhood-type
 "von Neuman" "Moore" "mixed" "random-n" "Moore-or-ignore"
-3
+4
 
 SLIDER
 18
@@ -271,7 +278,7 @@ rand-n-size
 rand-n-size
 0
 8
-7.0
+8.0
 1
 1
 NIL
@@ -289,10 +296,10 @@ allow-ignore
 -1000
 
 PLOT
-884
-332
-1262
-618
+651
+333
+1029
+619
 mean contribution
 NIL
 NIL
@@ -305,6 +312,21 @@ false
 "" ""
 PENS
 "default" 1.0 0 -16777216 true "" "plot mean-contribution"
+
+SLIDER
+16
+337
+208
+370
+ignore-moore-prob
+ignore-moore-prob
+0
+1
+0.5
+0.001
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
