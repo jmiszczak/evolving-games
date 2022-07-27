@@ -1,7 +1,10 @@
-turtles-own [energy]
+globals [ energies-avgs ]
+
+turtles-own [ energy ]
 
 to setup
   clear-all
+  set energies-avgs []
   setup-patches
   setup-turtles
   reset-ticks
@@ -13,6 +16,7 @@ to go
   reproduce
   check-death
   regrow-grass
+  update-avg-list
   tick
 end
 
@@ -25,7 +29,7 @@ to move-turtles
 end
 
 to setup-turtles
-  create-turtles 100
+  create-turtles poulation
   ask turtles [ setxy random-xcor random-ycor ]
 end
 
@@ -64,9 +68,30 @@ to regrow-grass
   ]
 end
 
-
 to-report avg-energy
   report mean [ energy ] of turtles
+end
+
+to update-avg-list
+  set energies-avgs lput avg-energy energies-avgs
+end
+
+to-report log0 [x]
+
+  (ifelse
+    x > 0
+    [ report log x 2 ]
+    x = 0
+    [ report 0 ]
+    x < 0
+    [ report -1 ]
+  )
+
+end
+
+to-report entropy-of-avg
+  ;; only a template, needs histogram calculations for energies-avgs
+  report sum map [ i -> i * log0 i] energies-avgs
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -138,6 +163,28 @@ MONITOR
 NIL
 avg-energy
 17
+1
+11
+
+INPUTBOX
+19
+142
+111
+202
+poulation
+700.0
+1
+0
+Number
+
+MONITOR
+27
+239
+135
+284
+NIL
+entropy-of-avg
+3
 1
 11
 
@@ -487,6 +534,19 @@ NetLogo 6.2.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="exp1" repetitions="10" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="10000"/>
+    <metric>avg-energy</metric>
+    <enumeratedValueSet variable="poulation">
+      <value value="500"/>
+      <value value="600"/>
+      <value value="700"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
