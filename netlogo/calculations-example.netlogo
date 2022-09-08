@@ -76,22 +76,23 @@ to update-avg-list
   set energies-avgs lput avg-energy energies-avgs
 end
 
-to-report log0 [x]
-
-  (ifelse
-    x > 0
-    [ report log x 2 ]
-    x = 0
-    [ report 0 ]
-    x < 0
-    [ report -1 ]
-  )
-
-end
-
 to-report entropy-of-avg
   ;; only a template, needs histogram calculations for energies-avgs
-  report sum map [ i -> i * log0 i] energies-avgs
+  report sum map [ i -> i * log0 i 2 ] energies-avgs
+end
+
+to-report entropy
+  let pBlack ( count patches with [ pcolor = black] ) / ( count patches )
+  let pWhite ( count patches with [ pcolor = white] ) / ( count patches )
+  report -1 * ( pBlack * log0 pBlack 2 + pWhite * log0 pWhite 2 )
+end
+
+to-report log0 [ x b ]
+  ifelse x = 0 [
+    report 0
+  ][
+    report log x b
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
