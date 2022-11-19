@@ -66,3 +66,12 @@ Agents.jl is a Julia framework for agent-based modeling (ABM). All further infor
 https://github.com/JoelForamitti/agentpy
 
 AgentPy is an open-source library for the development and analysis of agent-based models in Python. The framework integrates the tasks of model design, interactive simulations, numerical experiments, and data analysis within a single environment. The package is optimized for interactive computing with IPython, IPySimulate, and Jupyter.
+
+
+## MaDKIT
+
+https://github.com/fmichel/MaDKit
+
+MaDKit is an open source multiagent-based software written in Java.
+
+MaDKit 5 is designed as a lightweight Java library for developing distributed applications and simulations using the multiagent paradigm.
