@@ -61,4 +61,8 @@ https://github.com/JuliaDynamics/Agents.jl
 
 Agents.jl is a Julia framework for agent-based modeling (ABM). All further information about Agents.jl are provided in the docs.
 
+## AgentPy
 
+https://github.com/JoelForamitti/agentpy
+
+AgentPy is an open-source library for the development and analysis of agent-based models in Python. The framework integrates the tasks of model design, interactive simulations, numerical experiments, and data analysis within a single environment. The package is optimized for interactive computing with IPython, IPySimulate, and Jupyter.
