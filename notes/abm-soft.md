@@ -17,7 +17,11 @@ Repast Simphony is a richly interactive and easy to learn Java-based modeling to
 
 Repast for High Performance Computing is a lean and expert-focused C++-based distributed agent-based modeling toolkit that is designed for use on large computing clusters and supercomputers. 
 
-Repast for Python is a Python-based distributed agent-based modeling toolkit, intended to provide an easier on-ramp for researchers from diverse scientific communities to apply large-scale distributed ABM methods. 
+Repast for Python is a Python-based distributed agent-based modeling toolkit, intended to provide an easier on-ramp for researchers from diverse scientific communities to apply large-scale distributed ABM methods.
+
+### Instaltion process
+
+On GNU/Linux systme, Repast installation is done via Eclipse software management system. Examples are not included in the instalation, but they can be easilty imported using the IDE. 
 
 
 ## MASON
@@ -43,11 +47,21 @@ https://github.com/ie3-institute/simona
 
 The agent-based simulation environment SIMONA provides a simulation toolbox to run and implement large-scale agent-based electricity grid simulations with focus on distribution grids. As a result, close-to-reality time series are generated from various system participants and grid assets that can be used to analyze a given power grid. Application cases are for example distribution grid planning purposes but also flexibility analysis or coupled sector interdependency analysis. The framework contains several out-of-the-box available models for a wide variety of grid participants as well as their operational behavior.
 
+## StarLogo
 
+https://www.slnova.org/
 
-# Programming libraies
+StarLogo Nova is an agent-based game and simulation programming environment that combines an easy-to-use blocks-based programming language with a powerful simulation engine and 3D renderer.
 
-## Python MESA
+## GAMA
+
+GAMA (GIS Agent-based Modeling Architecture) is a modeling and simulation development environment for building spatially explicit agent-based simulations. GAMA provides a simulation platform with a complete modelling and simulation integrated development environment (IDE) for building spatially explicit agent-based simulations.
+
+GAMA is based on domain-specific language GAML (GAma Modeling Language). GAML was insired by Java and Smaltalk. It is agent-based and can be used to build simulaiton. 
+
+# Programming libraries
+
+## MESA (Python)
 
 https://github.com/projectmesa/mesa/
 
@@ -55,23 +69,38 @@ https://github.com/projectmesa/mesa/
 Mesa allows users to quickly create agent-based models using built-in core components (such as spatial grids and agent schedulers) or customized implementations; visualize them using a browser-based interface; and analyze their results using Python's data analysis tools. Its goal is to be the Python 3-based alternative to NetLogo, Repast, or MASON.
 
 
-## Julia Agents.jl
+## Agents.jl (Julia)
 
 https://github.com/JuliaDynamics/Agents.jl
 
 Agents.jl is a Julia framework for agent-based modeling (ABM). All further information about Agents.jl are provided in the docs.
 
-## AgentPy
+## AgentPy (Python)
 
 https://github.com/JoelForamitti/agentpy
 
 AgentPy is an open-source library for the development and analysis of agent-based models in Python. The framework integrates the tasks of model design, interactive simulations, numerical experiments, and data analysis within a single environment. The package is optimized for interactive computing with IPython, IPySimulate, and Jupyter.
 
 
-## MaDKIT
+## MaDKIT (Java)
 
 https://github.com/fmichel/MaDKit
 
 MaDKit is an open source multiagent-based software written in Java.
 
 MaDKit 5 is designed as a lightweight Java library for developing distributed applications and simulations using the multiagent paradigm.
+
+
+# Comercial systems
+
+## AnyLogic
+
+https://www.anylogic.com/
+
+AnyLogic is a multimethod simulation modeling tool developed by The AnyLogic Company (former XJ Technologies).[4] It supports agent-based, discrete event, and system dynamics simulation methodologies. IT can be run on Wikndows, macOs, and GNU/Linux. There is a free version available fro personal use.
+
+
+
+# References
+
+Sameera Abar, Georgios K. Theodoropoulos, Pierre Lemarinier, Gregory M.P. O’Hare, *Agent Based Modelling and Simulation tools: A review of the state-of-art software,* Computer Science Review, Volume 24, 2017, Pages 13-33, ISSN 1574-0137, https://doi.org/10.1016/j.cosrev.2017.03.001.
