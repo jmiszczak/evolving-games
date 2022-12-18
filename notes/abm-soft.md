@@ -91,6 +91,12 @@ MaDKit is an open source multiagent-based software written in Java.
 MaDKit 5 is designed as a lightweight Java library for developing distributed applications and simulations using the multiagent paradigm.
 
 
+## OpenABL
+
+https://github.com/OpenABL/OpenABL
+
+OpenABL is a work-in-progress domain-specific language for agent based simulations. It it designed to compile to multiple backends targeting different computing architectures, including single CPUs, GPUs and clusters.
+
 # Comercial systems
 
 ## AnyLogic
