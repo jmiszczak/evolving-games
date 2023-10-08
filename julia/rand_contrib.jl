@@ -55,9 +55,19 @@ for n in 1:numagents
 end
 
 println("Agents: ", nagents(model))
+function mean_contrib(model)
+    function ret(model) 
+        for ma in model.agents
+            if ma.contrib > 1
+                print(ma.contrib)
+            end
+        end
+    end
+    return [ret]
+end
 
 # run the model
 rand_prop(agent) = agent.test
 adata = [rand_prop, :contrib]
-data, _ = run!(model, agent_step!, numsteps; adata);
-print(data[1:256, :])
+agent_data, model_data = run!(model, agent_step!, numsteps; adata)
+println(agent_data[128:256, :])
